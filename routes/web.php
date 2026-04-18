@@ -32,15 +32,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/agreement/{version}', [App\Http\Controllers\Auth\RegistrationController::class, 'showAgreement'])->name('agreement.show');
 });
 
-// ============================================
-// SUPER ADMIN REGISTRATION FLOW
-// ============================================
-Route::prefix('super-admin')->name('super-admin.')->group(function () {
-    Route::get('/register/pin', [SuperAdminAuthController::class, 'showPinForm'])->name('pin');
-    Route::post('/register/pin', [SuperAdminAuthController::class, 'verifyPin'])->name('pin.verify');
-    Route::get('/register', [SuperAdminAuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [SuperAdminAuthController::class, 'register'])->name('register.store');
-});
+
 
 // ============================================
 // CUSTOMER PORTAL ROUTES (Public & Customer)
@@ -107,9 +99,9 @@ Route::get('/dashboard', App\Http\Controllers\DashboardRedirectController::class
 // ============================================
 Route::prefix('super-admin')->name('super-admin.')->middleware(['web', 'guest'])->group(function () {
     Route::get('/register/pin', [SuperAdminAuthController::class, 'showPinForm'])->name('pin');
-    Route::post('/register/pin', [SuperAdminAuthController::class, 'verifyPin']);
+    Route::post('/register/pin', [SuperAdminAuthController::class, 'verifyPin'])->name('pin.verify');
     Route::get('/register', [SuperAdminAuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [SuperAdminAuthController::class, 'register']);
+    Route::post('/register', [SuperAdminAuthController::class, 'register'])->name('register.store');
 });
 
 // ============================================

@@ -73,13 +73,6 @@
                 </div>
             </form>
         </div>
-
-        <div class="mt-8 text-center">
-            <a href="{{ route('demo.login') }}" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors group">
-                <span class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 transition-colors">🚀</span>
-                <span>Launch Quick Demo Instead</span>
-            </a>
-        </div>
     </div>
 </div>
 @endsection
