@@ -28,7 +28,7 @@ class TenantService
             return true;
         } catch (\Exception $e) {
             Log::error("Failed to create tenant database {$databaseName}: " . $e->getMessage());
-            return false;
+            throw new \Exception("Could not create tenant database: " . $e->getMessage());
         }
     }
 

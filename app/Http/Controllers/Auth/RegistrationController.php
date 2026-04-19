@@ -160,8 +160,10 @@ class RegistrationController extends Controller
                 'success'      => true,
                 'redirect_url' => route('login'),
             ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
+        } catch (\Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
             return response()->json([
                 'success' => false,
                 'message' => 'Registration failed: ' . $e->getMessage(),
