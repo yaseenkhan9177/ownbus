@@ -32,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
 
         // Cache observers for performance
         \App\Models\Vehicle::observe(\App\Observers\VehicleCacheObserver::class);
