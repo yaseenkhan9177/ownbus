@@ -164,9 +164,18 @@ class RegistrationController extends Controller
             if (DB::transactionLevel() > 0) {
                 DB::rollBack();
             }
+
+            // Log full error details
+            \Log::error('Registration failed', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Registration failed: ' . $e->getMessage(),
+                'message' => 'Registration failed: ' . $e->getMessage() . ' in ' . $e->getFile() . ' line ' . $e->getLine(),
             ], 500);
         }
     }
