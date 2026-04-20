@@ -26,6 +26,7 @@ class AdminDashboardService
             'expiring_trials'      => $this->getExpiringTrials(),
             'suspended_companies'  => $this->getSuspendedCompanies(),
             'failed_payments'      => $this->getFailedPaymentsCount(),
+            'pending_approvals'    => $this->getPendingApprovalsCount(),
         ];
     }
 
@@ -112,6 +113,13 @@ class AdminDashboardService
             return SubscriptionInvoice::withoutGlobalScopes()
                 ->where('status', 'failed')
                 ->count();
+        });
+    }
+
+    protected function getPendingApprovalsCount(): int
+    {
+        return Cache::remember('admin.dashboard.pending_approvals_count', 60, function () {
+            return \App\Models\SuperAdminRequest::where('status', 'pending')->count();
         });
     }
 
@@ -224,6 +232,28 @@ class AdminDashboardService
             ->get();
     }
 
+    public function getTopRevenueCompanies()
+    {
+        return Cache::remember('admin.dashboard.top_revenue_companies', 60, function () {
+            return Company::withoutGlobalScopes()
+                ->select('companies.*')
+                ->join('subscriptions', 'companies.id', '=', 'subscriptions.company_id')
+                ->join('subscription_plans', 'subscriptions.plan_id', '=', 'subscription_plans.id')
+                ->where('subscriptions.status', 'active')
+                ->orderByDesc('subscription_plans.price_monthly')
+                ->limit(5)
+                ->get();
+        });
+    }
+
+    public function getPendingApprovals()
+    {
+        return \App\Models\SuperAdminRequest::where('status', 'pending')
+            ->latest()
+            ->limit(5)
+            ->get();
+    }
+
     public function getSystemHealth(): array
     {
         $cpu = 0;
@@ -247,12 +277,32 @@ class AdminDashboardService
             }
         }
 
+        // DB Status
+        $dbStatus = 'Healthy';
+        try {
+            DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            $dbStatus = 'Error';
+        }
+
+        // Queue Status
+        $queueStatus = 'Healthy';
+        try {
+            $queueSize = DB::table('jobs')->count();
+            if ($queueSize > 100) $queueStatus = 'Congested';
+        } catch (\Exception $e) {
+            $queueStatus = 'Unknown';
+        }
+
         return [
-            'cpu_usage'  => $cpu,
-            'ram_usage'  => $ramUsage,
-            'ram_total'  => $ramTotal,
-            'disk_usage' => $diskUsage,
-            'disk_total' => $diskTotal,
+            'cpu_usage'    => $cpu,
+            'ram_usage'    => $ramUsage,
+            'ram_total'    => $ramTotal,
+            'disk_usage'   => $diskUsage,
+            'disk_total'   => $diskTotal,
+            'db_status'    => $dbStatus,
+            'queue_status' => $queueStatus,
+            'queue_size'   => $queueSize ?? 0,
         ];
     }
 

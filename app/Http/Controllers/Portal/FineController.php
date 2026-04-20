@@ -97,4 +97,64 @@ class FineController extends Controller
         return redirect()->route('company.fines.index')
             ->with('success', 'Fine recorded and linked to accounting.');
     }
+
+    public function import()
+    {
+        return view('portal.fines.import');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getRealPath(), 'r');
+        $header = fgetcsv($handle);
+        
+        $count = 0;
+        while (($row = fgetcsv($handle)) !== false) {
+            $data = array_combine($header, $row);
+            
+            // Basic mapping logic
+            // Expected columns: vehicle_number, fine_number, fine_date, amount, authority, fine_type
+            $vehicle = Vehicle::where('vehicle_number', $data['vehicle_number'])->first();
+            if (!$vehicle) continue;
+
+            $this->fineService->createFine([
+                'vehicle_id' => $vehicle->id,
+                'fine_number' => $data['fine_number'],
+                'fine_date' => $data['fine_date'],
+                'amount' => $data['amount'],
+                'authority' => $data['authority'] ?? 'RTA',
+                'fine_type' => $data['fine_type'] ?? 'General',
+                'status' => 'unpaid',
+                'responsible_type' => 'company', // Default for import
+            ]);
+            $count++;
+        }
+        fclose($handle);
+
+        return redirect()->route('company.fines.index')->with('success', "Imported {$count} fines successfully.");
+    }
+
+    public function report(Request $request)
+    {
+        $query = VehicleFine::with(['vehicle', 'driver']);
+
+        if ($request->has('vehicle_id')) {
+            $query->where('vehicle_id', $request->get('vehicle_id'));
+        }
+
+        if ($request->has('driver_id')) {
+            $query->where('driver_id', $request->get('driver_id'));
+        }
+
+        $fines = $query->get();
+        $vehicles = Vehicle::all();
+        $drivers = Driver::all();
+
+        return view('portal.fines.report', compact('fines', 'vehicles', 'drivers'));
+    }
 }

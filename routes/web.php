@@ -260,7 +260,22 @@ Route::prefix('company')->name('company.')->middleware(['auth', \App\Http\Middle
     Route::post('contracts/{contract}/terminate', [\App\Http\Controllers\Portal\ContractController::class, 'terminate'])->name('contracts.terminate');
     Route::get('contracts/{contract}/download', [\App\Http\Controllers\Portal\ContractController::class, 'downloadContract'])->name('contracts.download');
     Route::resource('contracts', \App\Http\Controllers\Portal\ContractController::class);
+    // Fines Module
+    Route::get('fines/import', [\App\Http\Controllers\Portal\FineController::class, 'import'])->name('fines.import');
+    Route::post('fines/import', [\App\Http\Controllers\Portal\FineController::class, 'storeImport'])->name('fines.storeImport');
+    Route::get('fines/report', [\App\Http\Controllers\Portal\FineController::class, 'report'])->name('fines.report');
+    // Tracking Module
+    Route::get('tracking', function() {
+        return view('portal.tracking.map');
+    })->name('tracking.map');
+
     Route::resource('fines', \App\Http\Controllers\Portal\FineController::class);
+
+    // Invoices Module
+    Route::resource('invoices', \App\Http\Controllers\Portal\InvoiceController::class);
+    Route::get('invoices/{invoice}/download', [\App\Http\Controllers\Portal\InvoiceController::class, 'downloadPdf'])->name('invoices.download');
+    Route::post('invoices/{invoice}/send', [\App\Http\Controllers\Portal\InvoiceController::class, 'sendEmail'])->name('invoices.send');
+    Route::post('invoices/{invoice}/payments', [\App\Http\Controllers\Portal\InvoicePaymentController::class, 'store'])->name('invoices.payments.store');
 
     Route::post('vendor-bills/{vendor_bill}/approve', [\App\Http\Controllers\Portal\VendorBillController::class, 'approve'])->name('vendor-bills.approve');
     Route::post('vendor-bills/{vendor_bill}/pay', [\App\Http\Controllers\Portal\VendorBillController::class, 'recordPayment'])->name('vendor-bills.pay');

@@ -44,16 +44,20 @@ class GpsIngestionController extends Controller
         $recordedAt = isset($data['recorded_at']) ? $data['recorded_at'] : now()->toDateTimeString();
 
         // Store location
-        VehicleLocation::create([
+        $location = VehicleLocation::create([
             'vehicle_id'  => $vehicle->id,
-            'lat'         => $data['lat'],
-            'lng'         => $data['lng'],
+            'latitude'    => $data['lat'],
+            'longitude'   => $data['lng'],
             'speed'       => $data['speed'] ?? null,
             'heading'     => $data['heading'] ?? null,
+            'ignition_status' => $request->boolean('ignition'),
             'accuracy'    => $data['accuracy'] ?? null,
             'source'      => 'device',
             'recorded_at' => $recordedAt,
         ]);
+
+        // Broadcast for live map
+        broadcast(new \App\Events\BroadcastVehicleLocation($location));
 
         // Update vehicle tracking status
         $vehicle->update([
@@ -97,10 +101,11 @@ class GpsIngestionController extends Controller
 
         return response()->json([
             'vehicle_id'  => $vehicle->id,
-            'lat'         => $location->lat,
-            'lng'         => $location->lng,
+            'lat'         => $location->latitude,
+            'lng'         => $location->longitude,
             'speed'       => $location->speed,
             'heading'     => $location->heading,
+            'ignition'    => $location->ignition_status,
             'updated_at'  => $location->recorded_at->toDateTimeString(),
             'source'      => 'database',
         ]);
@@ -126,10 +131,11 @@ class GpsIngestionController extends Controller
                 $dbLoc = VehicleLocation::latestFor($vehicle->id);
                 if ($dbLoc) {
                     $loc = [
-                        'lat'        => $dbLoc->lat,
-                        'lng'        => $dbLoc->lng,
+                        'lat'        => $dbLoc->latitude,
+                        'lng'        => $dbLoc->longitude,
                         'speed'      => $dbLoc->speed,
                         'heading'    => $dbLoc->heading,
+                        'ignition'   => $dbLoc->ignition_status,
                         'updated_at' => $dbLoc->recorded_at->toDateTimeString(),
                     ];
                 }

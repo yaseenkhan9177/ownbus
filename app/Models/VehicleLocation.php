@@ -12,20 +12,22 @@ class VehicleLocation extends Model
 
     protected $fillable = [
         'vehicle_id',
-        'lat',
-        'lng',
+        'latitude',
+        'longitude',
         'speed',
         'heading',
+        'ignition_status',
         'accuracy',
         'source',
         'recorded_at',
     ];
 
     protected $casts = [
-        'lat'         => 'decimal:7',
-        'lng'         => 'decimal:7',
-        'speed'       => 'decimal:2',
-        'recorded_at' => 'datetime',
+        'latitude'       => 'decimal:8',
+        'longitude'      => 'decimal:8',
+        'speed'          => 'decimal:2',
+        'ignition_status' => 'boolean',
+        'recorded_at'    => 'datetime',
     ];
 
     public function vehicle()

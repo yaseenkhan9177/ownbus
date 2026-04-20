@@ -11,8 +11,10 @@ class VehicleFine extends Model
     use HasFactory;
 
     // Status Constants
-    public const STATUS_PENDING = 'pending';
+    public const STATUS_UNPAID = 'unpaid';
     public const STATUS_PAID = 'paid';
+    public const STATUS_UNDER_PROCESSING = 'under-processing';
+    public const STATUS_APPEALED = 'appealed';
     public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [
@@ -24,6 +26,7 @@ class VehicleFine extends Model
         'responsible_type',
         'journal_entry_id',
         'source',
+        'authority',
         'fine_type',
         'fine_number',
         'fine_date',
@@ -32,7 +35,6 @@ class VehicleFine extends Model
         'black_points',
         'status',
         'paid_at',
-        'payment_reference',
         'payment_reference',
         'description',
         'attachment_path',

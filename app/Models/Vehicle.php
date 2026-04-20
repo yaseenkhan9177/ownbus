@@ -33,12 +33,18 @@ class Vehicle extends Model
         'inspection_expiry_date' => 'date',
         'purchase_date' => 'date',
         'last_gps_ping_at' => 'datetime',
+        'is_available'     => 'boolean',
+        'daily_rate'       => 'decimal:2',
+        'asset_value'      => 'decimal:2',
+        'depreciation_rate' => 'decimal:2',
+        'deleted_at'       => 'datetime',
     ];
 
     protected $fillable = [
         'branch_id',
         'vendor_id',
         'name',
+        'gps_imei',
         'vehicle_number',
         'make',
         'model',

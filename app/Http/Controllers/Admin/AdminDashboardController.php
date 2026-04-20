@@ -42,6 +42,10 @@ class AdminDashboardController extends Controller
         $recentSignups = $this->dashboardService->getRecentSignups();
         $failedPaymentsFeed = $this->dashboardService->getFailedPaymentsFeed();
 
+        // 5. UAE Specifics & New Requirements
+        $topRevenueCompanies = $this->dashboardService->getTopRevenueCompanies();
+        $pendingApprovals = $this->dashboardService->getPendingApprovals();
+
         return view('admin.dashboard', compact(
             'kpis',
             'revenueTrend',
@@ -53,7 +57,9 @@ class AdminDashboardController extends Controller
             'resourceUsage',
             'systemActivities',
             'systemErrors',
-            'subscriptionsDetails'
+            'subscriptionsDetails',
+            'topRevenueCompanies',
+            'pendingApprovals'
         ));
     }
 }

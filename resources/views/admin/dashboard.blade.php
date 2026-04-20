@@ -1,324 +1,348 @@
 @extends('layouts.super-admin')
 
-@section('title', 'Admin SaaS Command Center')
+@section('title', 'Super Admin Command Center | OwnBus')
 
 @push('styles')
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    .cyber-gradient {
-        background: radial-gradient(circle at top right, rgba(6, 182, 212, 0.15), transparent),
-            radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent);
+    body {
+        font-family: 'Outfit', sans-serif;
+        background-color: #050811;
     }
 
-    .neon-text-cyan {
-        text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    .premium-gradient {
+        background: radial-gradient(circle at top right, rgba(212, 168, 71, 0.08), transparent),
+            radial-gradient(circle at bottom left, rgba(10, 15, 30, 0.5), transparent);
     }
 
-    .neon-border-cyan {
-        border-color: rgba(6, 182, 212, 0.3);
-        box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
+    .gold-glow {
+        text-shadow: 0 0 15px rgba(212, 168, 71, 0.3);
+    }
+
+    .premium-table tr:hover {
+        background: rgba(212, 168, 71, 0.03);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(212, 168, 71, 0.2);
+        border-radius: 10px;
     }
 </style>
 @endpush
 
-@section('header_title')
-<div class="flex items-center space-x-3">
-    <h1 class="text-lg font-bold text-slate-100 uppercase tracking-widest text-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-        SUPER ADMIN DASHBOARD - OVERVIEW
-    </h1>
-</div>
-@endsection
-
 @section('content')
-<div class="space-y-8 cyber-gradient min-h-full">
-
-    <!-- Top Row: KPI Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 800)">
-        <!-- Skeleton -->
-        <template x-for="i in 6" :key="i">
-            <div x-show="loading" class="bg-slate-800/50 animate-pulse rounded-2xl p-6 h-[104px] border border-slate-700"></div>
-        </template>
-
-        <!-- Actual Data -->
-        <div x-show="!loading" class="contents">
-            <x-cyber-kpi
-                title="MRR"
-                :value="'$' . number_format($kpis['mrr'], 0)"
-                trend=""
-                icon='<path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />'
-                color="emerald" />
-
-            <x-cyber-kpi
-                title="ARR"
-                :value="'$' . number_format($kpis['arr'], 0)"
-                trend=""
-                icon='<path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />'
-                color="cyan" />
-
-            <x-cyber-kpi
-                title="CHURN RATE"
-                :value="$kpis['churn_rate'] . '%'"
-                trend=""
-                icon='<path stroke-linecap="round" stroke-linejoin="round" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />'
-                color="rose" />
-
-            <x-cyber-kpi
-                title="LTV"
-                :value="'$' . number_format($kpis['ltv'], 0)"
-                trend="18 Months"
-                icon='<path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />'
-                color="amber" />
-
-            <x-cyber-kpi
-                title="TOTAL COMPANIES"
-                :value="number_format($kpis['total_companies'])"
-                trend=""
-                icon='<path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />'
-                color="cyan" />
-
-            <x-cyber-kpi
-                title="ACTIVE SUBS"
-                :value="number_format($kpis['active_subscriptions'])"
-                trend=""
-                icon='<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />'
-                color="emerald" />
+<div class="px-6 py-8 premium-gradient min-h-screen text-slate-200">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight gold-glow uppercase">
+                System <span class="text-[#D4A847]">Overview</span>
+            </h1>
+            <p class="text-slate-500 text-sm mt-1 font-medium tracking-wide">Command Center &middot; UAE Multi-Tenant Portal</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button class="bg-[#D4A847] hover:bg-[#c2983b] text-[#0A0F1E] px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 shadow-lg shadow-[#D4A847]/10 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                Create Announcement
+            </button>
+            <div class="bg-[#0A0F1E] border border-[#D4A847]/20 p-2 rounded-xl text-[#D4A847] animate-pulse">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+            </div>
         </div>
     </div>
 
-    <!-- Middle Row: Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Revenue Trajectory -->
-        <div class="lg:col-span-8 bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md">
+    <!-- Top Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-10">
+        <x-premium-stat 
+            title="Monthly Revenue" 
+            :value="$kpis['mrr']" 
+            prefix="$" 
+            trend="12.5%" 
+            :trendUp="true"
+            icon='<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' />
+        
+        <x-premium-stat 
+            title="Annual Revenue" 
+            :value="$kpis['arr']" 
+            prefix="$" 
+            trend="8.2%" 
+            :trendUp="true"
+            icon='<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />' />
+        
+        <x-premium-stat 
+            title="Total Companies" 
+            :value="$kpis['total_companies']" 
+            trend="2 New" 
+            :trendUp="true"
+            icon='<path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />' />
+        
+        <x-premium-stat 
+            title="Active Subs" 
+            :value="$kpis['active_subscriptions']" 
+            trend="94%" 
+            :trendUp="true"
+            icon='<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />' />
+        
+        <x-premium-stat 
+            title="Churn Rate" 
+            :value="$kpis['churn_rate']" 
+            suffix="%" 
+            :trendUp="false"
+            trend="0.5%" 
+            icon='<path d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />' />
+        
+        <x-premium-stat 
+            title="Lifetime Value" 
+            :value="$kpis['ltv']" 
+            prefix="$" 
+            trend="Stable" 
+            icon='<path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />' />
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+        <!-- Revenue Chart -->
+        <div class="lg:col-span-8 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-[#D4A847]/50"></div>
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h3 class="text-lg font-semibold text-slate-100 mb-1">Revenue Trend (Last 12 Months)</h3>
+                    <h3 class="text-xl font-bold text-white tracking-tight uppercase">Revenue Analytics</h3>
+                    <p class="text-slate-500 text-xs font-semibold tracking-wider mt-1">LAST 12 MONTHS PERFORMANCE</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="flex items-center text-[10px] font-bold text-[#D4A847] bg-[#D4A847]/10 px-3 py-1 rounded-full border border-[#D4A847]/20 uppercase">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#D4A847] mr-2"></span> Paid Invoices
+                    </span>
                 </div>
             </div>
-            <div class="h-80 w-full relative">
-                <canvas id="revenueChart"></canvas>
+            <div class="h-[350px]">
+                <canvas id="revenueTrendChart"></canvas>
             </div>
         </div>
 
-        <!-- Plan Distribution Pie -->
-        <div class="lg:col-span-4 bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md flex flex-col">
-            <div class="flex items-center justify-between mb-8">
-                <h3 class="text-lg font-semibold text-slate-100">Plan Distribution</h3>
+        <!-- Plan Distribution -->
+        <div class="lg:col-span-4 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+             <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h3 class="text-xl font-bold text-white tracking-tight uppercase">Plan Distribution</h3>
+                    <p class="text-slate-500 text-xs font-semibold tracking-wider mt-1">SUBSCRIPTION SEGMENTS</p>
+                </div>
             </div>
-            <div class="h-80 w-full relative flex items-center justify-center flex-1">
+            <div class="h-[350px] flex items-center justify-center">
                 <canvas id="planPieChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Additional Rows: Health, Resources, and Billing -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Resource Usage -->
-        <div class="bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md">
-            <h3 class="text-lg font-semibold text-slate-100 mb-4 pb-2 border-b border-slate-800">Top Tenants Resource Usage</h3>
-            <div class="space-y-4">
-                @foreach($resourceUsage as $usageCompany)
-                <div class="flex justify-between items-center text-sm">
-                    <div class="font-medium text-slate-200">{{ $usageCompany->name }}</div>
-                    <div class="text-slate-400 font-mono text-xs flex space-x-2">
-                        <span>Vehicles: {{ $usageCompany->vehicles_count }}</span>
-                        <span>Drivers: {{ $usageCompany->drivers_count }}</span>
-                        <span>Users: {{ $usageCompany->users_count }}</span>
-                    </div>
-                </div>
-                <!-- Mini Progress Bar purely decorative -->
-                <div class="w-full bg-slate-800 rounded-full h-1.5 mt-1">
-                    <div class="bg-cyan-500 h-1.5 rounded-full" style="width: {{ min(100, max(5, ($usageCompany->vehicles_count / 100) * 100)) }}%"></div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-
-        <!-- Live System Health -->
-        <div class="bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md">
-            <h3 class="text-lg font-semibold text-slate-100 mb-4 pb-2 border-b border-slate-800 flex items-center justify-between">
-                System Health
-                <span class="animate-pulse h-2 w-2 bg-emerald-500 rounded-full"></span>
+    <!-- Health and Broadcast Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+        <!-- System Health Monitor -->
+        <div class="lg:col-span-4 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl">
+            <h3 class="text-lg font-bold text-white tracking-tight uppercase mb-6 flex items-center">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
+                System Health Monitor
             </h3>
             <div class="space-y-6">
-                <!-- CPU -->
-                <div>
-                    <div class="flex justify-between items-center mb-1 text-sm text-slate-300">
-                        <span>CPU Load</span>
-                        <span class="font-mono text-cyan-400">{{ $systemHealth['cpu_usage'] }}%</span>
-                    </div>
-                    <div class="w-full bg-slate-800 rounded-full h-2">
-                        <div class="bg-cyan-500 h-2 rounded-full" style="width: {{ min(100, $systemHealth['cpu_usage']) }}%"></div>
-                    </div>
-                </div>
-                <!-- RAM -->
-                <div>
-                    <div class="flex justify-between items-center mb-1 text-sm text-slate-300">
-                        <span>RAM Usage</span>
-                        <span class="font-mono text-emerald-400">{{ $systemHealth['ram_usage'] }} / {{ $systemHealth['ram_total'] }}</span>
-                    </div>
-                    <div class="w-full bg-slate-800 rounded-full h-2">
-                        <div class="bg-emerald-500 h-2 rounded-full" style="width: 45%"></div>
+                <!-- DB Status -->
+                <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 group hover:border-[#D4A847]/30 transition-all">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mr-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-bold text-[#D4A847] uppercase tracking-wider">Database Status</p>
+                            <p class="text-white font-bold">{{ $systemHealth['db_status'] }}</p>
+                        </div>
                     </div>
                 </div>
-                <!-- Disk -->
-                <div>
-                    <div class="flex justify-between items-center mb-1 text-sm text-slate-300">
-                        <span>Disk Usage</span>
-                        <span class="font-mono text-purple-400">{{ $systemHealth['disk_usage'] }} / {{ $systemHealth['disk_total'] }}</span>
+                <!-- Queue Status -->
+                <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 group hover:border-[#D4A847]/30 transition-all">
+                    <div class="flex items-center justify-center">
+                        <div class="w-10 h-10 rounded-lg bg-[#D4A847]/10 flex items-center justify-center text-[#D4A847] mr-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-bold text-[#D4A847] uppercase tracking-wider">Queue System</p>
+                            <p class="text-white font-bold">{{ $systemHealth['queue_status'] }} <span class="text-slate-500 font-medium text-xs ml-1">({{ $systemHealth['queue_size'] }} pending)</span></p>
+                        </div>
                     </div>
-                    <div class="w-full bg-slate-800 rounded-full h-2">
-                        <div class="bg-purple-500 h-2 rounded-full" style="width: 30%"></div>
+                </div>
+                <!-- Storage -->
+                <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-[11px] font-bold text-[#D4A847] uppercase tracking-wider">Storage Usage</p>
+                        <span class="text-white text-xs font-bold">{{ $systemHealth['disk_usage'] }} / {{ $systemHealth['disk_total'] }}</span>
+                    </div>
+                    <div class="w-full bg-black/40 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-[#D4A847] h-full rounded-full shadow-[0_0_10px_#D4A847]" style="width: 35%"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Billing Management -->
-        <div class="bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md">
-            <h3 class="text-lg font-semibold text-slate-100 mb-4 pb-2 border-b border-slate-800">Billing Management</h3>
-            <div class="flex flex-col space-y-4">
-                <div class="flex items-center justify-between p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                    <span class="text-emerald-400 text-sm font-semibold">Active Subscriptions</span>
-                    <span class="text-emerald-300 font-mono font-bold">{{ $subscriptionsDetails['active'] }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 rounded-lg bg-rose-500/10 border border-rose-500/20">
-                    <span class="text-rose-400 text-sm font-semibold">Expired/Canceled</span>
-                    <span class="text-rose-300 font-mono font-bold">{{ $subscriptionsDetails['expired'] }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                    <span class="text-amber-400 text-sm font-semibold">Trial Users</span>
-                    <span class="text-amber-300 font-mono font-bold">{{ $subscriptionsDetails['trialing'] }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom Row: Feeds -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Error Alerts -->
-        <div class="bg-[#0f1524] p-6 rounded-2xl border border-red-900/50 shadow-md flex flex-col h-96 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-rose-900"></div>
-            <div class="mb-4 pb-2 border-b border-slate-800 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-rose-500 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                    </svg>
-                    System Exceptions Target
-                </h3>
-            </div>
-            <div class="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
-                @forelse($systemErrors as $errorLog)
-                <div class="p-3 rounded-lg bg-slate-900/50 border border-red-900/30">
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="text-xs font-bold text-slate-300">{{ $errorLog->tenant->name ?? 'System' }}</span>
-                        <span class="text-[10px] text-slate-500 font-mono">{{ $errorLog->created_at->format('H:i') }}</span>
+        <!-- Broadcast Message Panel -->
+        <div class="lg:col-span-8 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl relative">
+            <h3 class="text-lg font-bold text-white tracking-tight uppercase mb-6 flex items-center">
+                <svg class="w-5 h-5 mr-3 text-[#D4A847]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+                System-Wide Broadcast
+            </h3>
+            <form action="{{ route('admin.broadcasts.store') }}" method="POST">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-2 block">Message Content</label>
+                        <textarea name="message" rows="3" class="w-full bg-black/40 border border-[#D4A847]/20 rounded-xl p-4 text-white placeholder-slate-600 focus:outline-none focus:border-[#D4A847] transition-colors" placeholder="Type message to all companies..."></textarea>
                     </div>
-                    <p class="text-xs text-rose-400 font-mono line-clamp-2 truncate" title="{{ $errorLog->error_message }}">
-                        {{ $errorLog->error_message }}
-                    </p>
-                    <p class="text-[10px] text-slate-500 mt-1 truncate">
-                        {{ $errorLog->url }}
-                    </p>
-                </div>
-                @empty
-                <div class="flex items-center justify-center h-full text-center">
-                    <p class="text-sm text-slate-600 italic font-mono uppercase tracking-widest">No Critical Errors Detected</p>
-                </div>
-                @endforelse
-            </div>
-        </div>
-
-        <!-- System Activities -->
-        <div class="bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md flex flex-col h-96 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-cyan-400"></div>
-            <div class="mb-4 pb-2 border-b border-slate-800 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-slate-100 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    Recent Activity Feed
-                </h3>
-            </div>
-            <div class="space-y-3 overflow-y-auto flex-1 pr-2 custom-scrollbar text-sm">
-                @forelse($systemActivities as $activity)
-                <div class="flex items-start">
-                    <div class="mt-1 mr-3 w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_5px_#06b6d4]"></div>
-                    <div class="flex-1">
-                        <span class="text-slate-400 font-mono text-xs mr-2">{{ $activity->created_at->format('H:i') }}</span>
-                        <span class="text-cyan-400 font-semibold">{{ $activity->tenant->name ?? 'System' }}</span>
-                        <span class="text-slate-300 ml-1">{{ $activity->action }}</span>
-                        @if($activity->description)
-                        <div class="text-slate-500 text-xs mt-0.5 truncate">{{ $activity->description }}</div>
-                        @endif
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" name="urgent" class="hidden peer">
+                                <div class="w-5 h-5 border border-[#D4A847]/30 rounded flex items-center justify-center mr-2 peer-checked:bg-[#D4A847] peer-checked:border-[#D4A847] transition-all">
+                                    <svg class="w-3 h-3 text-[#0A0F1E] opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                </div>
+                                <span class="text-xs font-bold text-slate-400 group-hover:text-slate-200 uppercase tracking-widest">Mark as Urgent</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="bg-[#242938] hover:bg-[#D4A847] hover:text-[#0A0F1E] text-[#D4A847] px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 border border-[#D4A847]/20">
+                            Send Broadcast
+                        </button>
                     </div>
                 </div>
-                @empty
-                <div class="flex items-center justify-center h-full text-center">
-                    <p class="text-sm text-slate-600 italic font-mono uppercase tracking-widest">No Activities Logged</p>
-                </div>
-                @endforelse
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Fourth Row: Original Signups/Failed Payments -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Recent Signups -->
-        <div class="bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md flex flex-col h-96">
-            <div class="mb-4 pb-2 border-b border-slate-800 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-slate-100">Recent Signups</h3>
-                <span class="px-2 py-1 bg-cyan-500/10 text-cyan-400 text-xs font-bold rounded-md border border-cyan-500/20">Latest {{ count($recentSignups) }}</span>
+    <!-- Data Tables Row -->
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <!-- Recent Registrations -->
+        <div class="xl:col-span-8 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl relative">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-lg font-bold text-white tracking-tight uppercase">Recent Company Registrations</h3>
+                <a href="{{ route('admin.companies.index') }}" class="text-[#D4A847] text-xs font-bold uppercase tracking-widest hover:gold-glow transition-all">View All</a>
             </div>
-            <div class="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
-                @forelse($recentSignups as $company)
-                <div class="flex items-center p-3 rounded-lg bg-slate-800/20 border border-slate-800/50 hover:bg-slate-800/40 transition-colors">
-                    <div class="mr-4 text-cyan-500 bg-cyan-500/10 p-2 rounded-lg">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
-                        </svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-slate-200 truncate">{{ $company->name }}</p>
-                        <p class="text-xs text-slate-500 truncate">{{ $company->owner_name ?? 'No Owner' }} &middot; {{ $company->subscription->plan->name ?? 'No Plan' }}</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs font-mono text-slate-400">{{ $company->created_at->diffForHumans() }}</span>
-                    </div>
-                </div>
-                @empty
-                <div class="flex items-center justify-center h-full text-center">
-                    <p class="text-sm text-slate-500 italic font-mono uppercase tracking-widest">No Recent Signups</p>
-                </div>
-                @endforelse
+            <div class="overflow-x-auto">
+                <table class="w-full premium-table">
+                    <thead>
+                        <tr class="text-left border-b border-white/5">
+                            <th class="pb-4 text-[10px] font-bold text-[#D4A847] uppercase tracking-[0.2em]">Company / Owner</th>
+                            <th class="pb-4 text-[10px] font-bold text-[#D4A847] uppercase tracking-[0.2em]">Plan</th>
+                            <th class="pb-4 text-[10px] font-bold text-[#D4A847] uppercase tracking-[0.2em]">Registered</th>
+                            <th class="pb-4 text-[10px] font-bold text-[#D4A847] uppercase tracking-[0.2em]">Status</th>
+                            <th class="pb-4 text-[10px] font-bold text-[#D4A847] uppercase tracking-[0.2em] text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        @foreach($recentSignups as $company)
+                        <tr class="text-sm transition-colors group">
+                            <td class="py-5">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#D4A847] font-bold mr-4 group-hover:border-[#D4A847]/50 transition-all">
+                                        {{ substr($company->name, 0, 1) }}
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-bold tracking-wide">{{ $company->name }}</p>
+                                        <p class="text-slate-500 text-xs mt-0.5">{{ $company->email }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-5">
+                                <span class="px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-[11px] font-bold uppercase tracking-widest border border-indigo-500/20">
+                                    {{ $company->subscription->plan->name ?? 'No Plan' }}
+                                </span>
+                            </td>
+                            <td class="py-5 text-slate-400 text-xs font-medium">
+                                {{ $company->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="py-5">
+                                <span class="flex items-center text-[10px] font-bold {{ $company->status === 'active' ? 'text-emerald-400' : 'text-amber-400' }} uppercase tracking-widest">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $company->status === 'active' ? 'bg-emerald-400' : 'bg-amber-400' }} mr-2 animate-pulse"></span>
+                                    {{ $company->status }}
+                                </span>
+                            </td>
+                            <td class="py-5 text-right">
+                                <a href="{{ route('admin.companies.show', $company->id) }}" class="text-slate-400 hover:text-white transition-colors">
+                                    <svg class="w-5 h-5 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Failed Payments -->
-        <div class="bg-[#0f1524] p-6 rounded-2xl border border-slate-800 shadow-md flex flex-col h-96">
-            <div class="mb-4 pb-2 border-b border-slate-800 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-slate-100">Recent Failed Payments</h3>
-                <span class="px-2 py-1 bg-rose-500/10 text-rose-400 text-xs font-bold rounded-md border border-rose-500/20">{{ count($failedPaymentsFeed) }} Alerts</span>
+        <!-- Right Side: Feeds & Approvals -->
+        <div class="xl:col-span-4 space-y-8">
+            <!-- Pending Approvals -->
+            <div class="bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl">
+                <h3 class="text-lg font-bold text-white tracking-tight uppercase mb-6 flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 mr-3 animate-pulse"></span>
+                    Access Requests
+                </h3>
+                <div class="space-y-4">
+                    @forelse($pendingApprovals as $request)
+                    <div class="p-4 rounded-xl bg-white/5 border border-white/5 group hover:border-amber-500/50 transition-all">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-xs mr-3">
+                                    {{ substr($request->name, 0, 1) }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-white tracking-wide">{{ $request->name }}</p>
+                                    <p class="text-[10px] text-slate-500">{{ $request->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <form action="{{ route('admin.requests.approve', $request->id) }}" method="POST" class="flex-1">
+                                @csrf
+                                <button class="w-full bg-[#D4A847] text-[#0A0F1E] text-[10px] font-bold uppercase py-2 rounded-lg hover:shadow-lg hover:shadow-[#D4A847]/20 transition-all">
+                                    Approve
+                                </button>
+                            </form>
+                            <form action="{{ route('admin.requests.reject', $request->id) }}" method="POST" class="flex-1">
+                                @csrf
+                                <button class="w-full bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[10px] font-bold uppercase py-2 rounded-lg hover:bg-rose-500 hover:text-white transition-all">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-8">
+                        <p class="text-slate-600 text-xs font-bold uppercase tracking-widest">No Pending Requests</p>
+                    </div>
+                    @endforelse
+                </div>
             </div>
-            <div class="space-y-4 overflow-y-auto flex-1 pr-2 custom-scrollbar">
-                @forelse($failedPaymentsFeed as $invoice)
-                <div class="flex items-center p-3 rounded-lg bg-rose-900/10 border border-rose-800/30 hover:bg-rose-900/20 transition-colors">
-                    <div class="mr-4 text-rose-500 bg-rose-500/10 p-2 rounded-lg">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+
+            <!-- Top Revenue Companies -->
+            <div class="bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl">
+                <h3 class="text-lg font-bold text-white tracking-tight uppercase mb-6 flex items-center justify-between">
+                    Top Producers
+                    <svg class="w-5 h-5 text-[#D4A847]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                </h3>
+                <div class="space-y-5">
+                    @foreach($topRevenueCompanies as $topComp)
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-all">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 rounded-full bg-[#D4A847] mr-4"></div>
+                            <span class="text-sm font-bold text-white tracking-wide truncate max-w-[120px]">{{ $topComp->name }}</span>
+                        </div>
+                        <span class="text-xs font-mono font-bold text-[#D4A847]">
+                            ${{ number_format($topComp->subscription->plan->price_monthly ?? 0, 0) }}/mo
+                        </span>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-slate-200 truncate">{{ $invoice->company->name ?? 'Unknown Company' }}</p>
-                        <p class="text-xs text-rose-400 font-mono">${{ number_format($invoice->amount, 2) }} &middot; {{ $invoice->subscription->plan->name ?? 'Unknown Plan' }}</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs font-mono text-slate-500">{{ $invoice->created_at->diffForHumans() }}</span>
-                    </div>
+                    @endforeach
                 </div>
-                @empty
-                <div class="flex items-center justify-center h-full text-center">
-                    <p class="text-sm text-slate-500 italic font-mono uppercase tracking-widest">No Failed Payments</p>
-                </div>
-                @endforelse
             </div>
         </div>
     </div>
@@ -326,164 +350,103 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- 1. Revenue Trend Chart ---
-        const revCtx = document.getElementById('revenueChart');
-        if (revCtx) {
-            const ctx = revCtx.getContext('2d');
-            const revGradient = ctx.createLinearGradient(0, 0, 0, 300);
-            revGradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
-            revGradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+        const primaryGold = '#D4A847';
+        const darkNavy = '#0A0F1E';
+        
+        // Revenue Chart
+        const trendCtx = document.getElementById('revenueTrendChart').getContext('2d');
+        const trendGradient = trendCtx.createLinearGradient(0, 0, 0, 400);
+        trendGradient.addColorStop(0, 'rgba(212, 168, 71, 0.3)');
+        trendGradient.addColorStop(1, 'rgba(212, 168, 71, 0.0)');
 
-            const revData = @json($revenueTrend['data'] ?? []);
-            const revLabels = @json($revenueTrend['labels'] ?? []);
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: revLabels,
-                    datasets: [{
-                        label: 'Revenue',
-                        data: revData,
-                        borderColor: '#06b6d4',
-                        borderWidth: 3,
-                        backgroundColor: revGradient,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#0f1524',
-                        pointBorderColor: '#06b6d4',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            titleFont: {
-                                size: 13,
-                                family: 'monospace'
-                            },
-                            bodyFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            padding: 10,
-                            displayColors: false,
-                            callbacks: {
-                                label: function(context) {
-                                    return '$' + context.parsed.y.toLocaleString();
-                                }
-                            }
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: @json($revenueTrend['labels'] ?? []),
+                datasets: [{
+                    label: 'Revenue',
+                    data: @json($revenueTrend['data'] ?? []),
+                    borderColor: primaryGold,
+                    backgroundColor: trendGradient,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointBackgroundColor: darkNavy,
+                    pointBorderColor: primaryGold,
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#161B2E',
+                        titleColor: '#D4A847',
+                        bodyColor: '#FFF',
+                        padding: 15,
+                        borderColor: 'rgba(212, 168, 71, 0.3)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: (context) => '$' + context.parsed.y.toLocaleString()
                         }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                        ticks: { color: '#64748b', font: { family: 'Outfit' }, callback: v => '$' + v }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(255,255,255,0.05)'
-                            },
-                            ticks: {
-                                color: '#64748b',
-                                font: {
-                                    family: 'monospace',
-                                    size: 11
-                                },
-                                callback: value => '$' + value
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#64748b',
-                                font: {
-                                    family: 'monospace',
-                                    size: 11
-                                }
-                            }
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b', font: { family: 'Outfit' } }
+                    }
+                }
+            }
+        });
+
+        // Plan Distribution Pie
+        const pieCtx = document.getElementById('planPieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @json($planDistribution['labels'] ?? []),
+                datasets: [{
+                    data: @json($planDistribution['data'] ?? []),
+                    backgroundColor: [
+                        '#D4A847',
+                        '#9E7E36',
+                        '#6B5525',
+                        '#382C14',
+                        '#1B150A'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '80%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#94a3b8',
+                            usePointStyle: true,
+                            padding: 25,
+                            font: { family: 'Outfit', size: 11 }
                         }
                     }
                 }
-            });
-        }
-
-        // --- 2. Plan Distribution Pie Chart ---
-        const pieCtx = document.getElementById('planPieChart');
-        if (pieCtx) {
-            const planData = @json($planDistribution['data'] ?? []);
-            const planLabels = @json($planDistribution['labels'] ?? []);
-
-            new Chart(pieCtx.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: planLabels,
-                    datasets: [{
-                        data: planData,
-                        backgroundColor: [
-                            '#06b6d4', // Cyan
-                            '#3b82f6', // Blue
-                            '#10b981', // Emerald
-                            '#6366f1', // Indigo
-                            '#8b5cf6' // Violet
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '75%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#94a3b8',
-                                usePointStyle: true,
-                                padding: 20,
-                                font: {
-                                    size: 12,
-                                    family: 'sans-serif'
-                                }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            bodyFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            padding: 10,
-                            displayColors: true
-                        }
-                    }
-                }
-            });
-        }
+            }
+        });
     });
 </script>
-<style>
-    /* Custom Scrollbar for Feeds */
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background-color: #334155;
-        border-radius: 10px;
-    }
-</style>
 @endpush
