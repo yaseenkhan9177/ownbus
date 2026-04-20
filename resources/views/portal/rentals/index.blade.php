@@ -38,7 +38,7 @@
             <h2 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Global Matrix</h2>
             <div class="flex items-center space-x-2">
                 <!-- Export UI -->
-                <form action="{{ route('exports.store') }}" method="POST" class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 shadow-inner h-9">
+                <form action="{{ route('company.exports.store') }}" method="POST" class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 shadow-inner h-9">
                     @csrf
                     <input type="hidden" name="type" value="rentals">
                     <input type="hidden" name="filters[status]" value="{{ request('status') }}">

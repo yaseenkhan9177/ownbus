@@ -27,7 +27,7 @@
 
         <div class="flex items-center space-x-4">
             <!-- Export UI -->
-            <form action="{{ route('exports.store') }}" method="POST" class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 shadow-inner">
+            <form action="{{ route('company.exports.store') }}" method="POST" class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 shadow-inner">
                 @csrf
                 <input type="hidden" name="type" value="vehicles">
                 <input type="hidden" name="filters[status]" value="{{ request('status') }}">

@@ -112,8 +112,6 @@ Route::post('/impersonation/leave', [\App\Http\Controllers\Admin\CompanyControll
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'isSuperAdmin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::post('exports', [\App\Http\Controllers\Portal\ExportController::class, 'store'])->name('exports.store');
-
     // Admin Access Requests
     Route::get('/super-admin-requests', [\App\Http\Controllers\Admin\SuperAdminRequestController::class, 'index'])->name('requests.index');
     Route::post('/super-admin-requests/{id}/approve', [\App\Http\Controllers\Admin\SuperAdminRequestController::class, 'approve'])->name('requests.approve');
@@ -272,6 +270,7 @@ Route::prefix('company')->name('company.')->middleware(['auth', \App\Http\Middle
     // Reports
     Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
     Route::post('/reports/export', [\App\Http\Controllers\ReportController::class, 'export'])->name('reports.export');
+    Route::post('exports', [\App\Http\Controllers\Portal\ExportController::class, 'store'])->name('exports.store');
 
     // Export Endpoints (Excel + PDF)
     Route::get('/reports/export/invoices/excel', [App\Http\Controllers\Portal\ReportExportController::class, 'invoicesExcel'])->name('reports.export.invoices.excel');
