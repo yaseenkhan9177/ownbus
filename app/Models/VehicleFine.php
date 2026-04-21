@@ -34,6 +34,8 @@ class VehicleFine extends Model
         'amount',
         'black_points',
         'status',
+        'last_checked_at',
+        'external_reference',
         'paid_at',
         'payment_reference',
         'description',
@@ -45,6 +47,7 @@ class VehicleFine extends Model
         'fine_date'            => 'date',
         'due_date'             => 'date',
         'paid_at'              => 'datetime',
+        'last_checked_at'      => 'datetime',
         'black_points'         => 'integer',
         'amount'               => 'decimal:2',
     ];

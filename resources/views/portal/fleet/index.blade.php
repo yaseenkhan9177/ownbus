@@ -133,7 +133,12 @@
                                     <a href="{{ route('company.fleet.show', $vehicle) }}" class="text-sm font-black text-slate-900 dark:text-white group-hover:text-cyan-500 transition-colors uppercase tracking-tight">
                                         {{ $vehicle->vehicle_number }}
                                     </a>
-                                    <div class="flex items-center text-[10px] text-slate-500 mt-0.5 space-x-2">
+                                    @if($vehicle->plate_number)
+                                        <div class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 mt-1 inline-block font-mono font-bold tracking-widest uppercase">
+                                            {{ $vehicle->registration_emirate }} - {{ $vehicle->plate_number }}
+                                        </div>
+                                    @endif
+                                    <div class="flex items-center text-[10px] text-slate-500 mt-1 space-x-2">
                                         <span class="font-bold">{{ $vehicle->name }}</span>
                                         <span>&bull;</span>
                                         <span>{{ $vehicle->model }} ({{ $vehicle->year }})</span>

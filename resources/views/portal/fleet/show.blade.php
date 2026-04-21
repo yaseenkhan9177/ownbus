@@ -128,6 +128,15 @@
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800">
                                     <div class="flex flex-col">
+                                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">State Registration</span>
+                                        <span class="text-xs font-bold">{{ $vehicle->registration_emirate ?? 'N/A' }} / {{ $vehicle->plate_category ?? 'N/A' }}</span>
+                                    </div>
+                                    @if($vehicle->plate_number)
+                                    <span class="text-[10px] font-mono font-black px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded">{{ $vehicle->plate_number }}</span>
+                                    @endif
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800">
+                                    <div class="flex flex-col">
                                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Mulkiya Expiry</span>
                                         <span class="text-xs font-bold">{{ $vehicle->registration_expiry ? $vehicle->registration_expiry->format('d M Y') : 'UNREGISTERED' }}</span>
                                     </div>

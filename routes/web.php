@@ -261,6 +261,9 @@ Route::prefix('company')->name('company.')->middleware(['auth', \App\Http\Middle
     Route::get('contracts/{contract}/download', [\App\Http\Controllers\Portal\ContractController::class, 'downloadContract'])->name('contracts.download');
     Route::resource('contracts', \App\Http\Controllers\Portal\ContractController::class);
     // Fines Module
+    Route::get('fines/checker', [\App\Http\Controllers\Portal\FineCheckerController::class, 'index'])->name('fines.checker');
+    Route::post('fines/record-checker', [\App\Http\Controllers\Portal\FineCheckerController::class, 'record'])->name('fines.record');
+    
     Route::get('fines/import', [\App\Http\Controllers\Portal\FineController::class, 'import'])->name('fines.import');
     Route::post('fines/import', [\App\Http\Controllers\Portal\FineController::class, 'storeImport'])->name('fines.storeImport');
     Route::get('fines/report', [\App\Http\Controllers\Portal\FineController::class, 'report'])->name('fines.report');
