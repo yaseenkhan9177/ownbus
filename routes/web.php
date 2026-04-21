@@ -260,9 +260,12 @@ Route::prefix('company')->name('company.')->middleware(['auth', \App\Http\Middle
     Route::post('contracts/{contract}/terminate', [\App\Http\Controllers\Portal\ContractController::class, 'terminate'])->name('contracts.terminate');
     Route::get('contracts/{contract}/download', [\App\Http\Controllers\Portal\ContractController::class, 'downloadContract'])->name('contracts.download');
     Route::resource('contracts', \App\Http\Controllers\Portal\ContractController::class);
-    // Fines Module
+    // Fines Module - Fine Checker
     Route::get('fines/checker', [\App\Http\Controllers\Portal\FineCheckerController::class, 'index'])->name('fines.checker');
-    Route::post('fines/record-checker', [\App\Http\Controllers\Portal\FineCheckerController::class, 'record'])->name('fines.record');
+    Route::post('fines/checker/store', [\App\Http\Controllers\Portal\FineCheckerController::class, 'store'])->name('fines.checker.store');
+    Route::patch('fines/checker/{fine}/paid', [\App\Http\Controllers\Portal\FineCheckerController::class, 'markPaid'])->name('fines.checker.paid');
+    Route::patch('fines/checker/{fine}/dispute', [\App\Http\Controllers\Portal\FineCheckerController::class, 'dispute'])->name('fines.checker.dispute');
+    Route::delete('fines/checker/{fine}', [\App\Http\Controllers\Portal\FineCheckerController::class, 'destroy'])->name('fines.checker.destroy');
     
     Route::get('fines/import', [\App\Http\Controllers\Portal\FineController::class, 'import'])->name('fines.import');
     Route::post('fines/import', [\App\Http\Controllers\Portal\FineController::class, 'storeImport'])->name('fines.storeImport');

@@ -98,6 +98,12 @@ class FineController extends Controller
             ->with('success', 'Fine recorded and linked to accounting.');
     }
 
+    public function show(VehicleFine $fine)
+    {
+        $fine->load(['vehicle', 'driver', 'customer', 'rental']);
+        return view('portal.fines.show', compact('fine'));
+    }
+
     public function import()
     {
         return view('portal.fines.import');

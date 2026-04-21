@@ -1,4 +1,4 @@
-@extends('portal.layout')
+@extends('layouts.company')
 
 @section('title', 'Fleet Fines Explorer | OwnBus')
 

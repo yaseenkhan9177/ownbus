@@ -1,15 +1,23 @@
-@extends('portal.layout')
+@extends('layouts.company')
 
 @section('title', 'Fines Analysis Report | OwnBus')
+
+@section('header_title')
+<div class="flex items-center space-x-3">
+    <a href="{{ route('company.fines.index') }}" class="p-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl text-slate-400 hover:text-indigo-500 transition-colors shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    </a>
+    <h1 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight uppercase">Fines Analysis Report</h1>
+</div>
+@endsection
 
 @section('content')
 <div class="px-6 py-8">
     <div class="flex items-center justify-between mb-10">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800">Fines Analysis Report</h1>
-            <p class="text-slate-500 text-sm">Detailed breakdown of violations and financial impact</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Detailed breakdown of violations and financial impact</p>
         </div>
-        <button onclick="window.print()" class="bg-white border border-slate-200 px-5 py-2.5 rounded-xl text-slate-600 font-bold text-sm hover:bg-slate-50 transition-all flex items-center">
+        <button onclick="window.print()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-5 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2v4h10z" /></svg>
             Print Report
         </button>
