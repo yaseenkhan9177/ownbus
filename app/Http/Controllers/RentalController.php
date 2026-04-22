@@ -134,6 +134,22 @@ class RentalController extends Controller
             ['final_amount' => $rental->final_amount, 'rental_type' => $rental->rental_type]
         );
 
+        $settings = $company->companyNotificationSettings;
+        if ($settings && $settings->whatsapp_enabled && $settings->notify_new_rental && $settings->whatsapp_number) {
+            \App\Jobs\SendWhatsAppJob::dispatch(
+                $settings->whatsapp_number,
+                'rental_created',
+                [
+                    'company_name' => $company->name,
+                    'customer_name' => $customer->name ?? $customer->company_name,
+                    'vehicle_name' => $rental->vehicle ? $rental->vehicle->vehicle_number : 'N/A',
+                    'start_date' => \Carbon\Carbon::parse($rental->start_date)->format('d M Y'),
+                    'end_date' => \Carbon\Carbon::parse($rental->end_date)->format('d M Y'),
+                    'amount' => number_format($rental->final_amount, 2),
+                ]
+            );
+        }
+
         return redirect()->route('company.rentals.show', $rental)
             ->with('success', 'Rental Quote created successfully.');
     }

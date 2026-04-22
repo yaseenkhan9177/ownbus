@@ -41,6 +41,9 @@ class VehicleRequest extends FormRequest
             'registration_code'      => 'nullable|string|max:50',
             'plate_number'           => 'nullable|string|max:50',
             'plate_category'         => 'nullable|string|max:100',
+            'plate_source'           => 'nullable|string|max:100',
+            'plate_number_dp'        => 'nullable|string|max:20',
+            'plate_code_dp'          => 'nullable|string|max:10',
             'vehicle_code'           => [
                 'nullable',
                 'string',

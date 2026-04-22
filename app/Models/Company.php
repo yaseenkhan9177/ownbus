@@ -81,4 +81,9 @@ class Company extends Model
     {
         return $this->hasOne(NotificationSetting::class);
     }
+
+    public function companyNotificationSettings()
+    {
+        return $this->hasOne(CompanyNotificationSettings::class);
+    }
 }

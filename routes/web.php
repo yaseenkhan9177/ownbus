@@ -354,6 +354,11 @@ Route::prefix('company')->name('company.')->middleware(['auth', \App\Http\Middle
     Route::get('/settings', [App\Http\Controllers\Portal\SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [App\Http\Controllers\Portal\SettingsController::class, 'update'])->name('settings.update');
     
+    // WhatsApp Settings
+    Route::get('/settings/whatsapp', [App\Http\Controllers\Portal\WhatsAppSettingsController::class, 'index'])->name('settings.whatsapp');
+    Route::post('/settings/whatsapp', [App\Http\Controllers\Portal\WhatsAppSettingsController::class, 'update'])->name('settings.whatsapp.update');
+    Route::post('/settings/whatsapp/test', [App\Http\Controllers\Portal\WhatsAppSettingsController::class, 'test'])->name('settings.whatsapp.test');
+    
     // Tenant Workspace Configuration Overrides
     Route::get('/system-preferences', [App\Http\Controllers\Portal\SettingController::class, 'index'])->name('system-preferences.index');
     Route::post('/system-preferences', [App\Http\Controllers\Portal\SettingController::class, 'update'])->name('system-preferences.update');

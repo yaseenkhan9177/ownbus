@@ -95,7 +95,26 @@ class FineCheckerController extends Controller
                 && ($fineData['last_checked_at'] = now());
         } catch (\Exception $e) {}
 
-        VehicleFine::create($fineData);
+        $fine = VehicleFine::create($fineData);
+
+        $company = auth()->user()->company;
+        $settings = $company->companyNotificationSettings;
+        if ($settings && $settings->whatsapp_enabled && $settings->notify_new_fine && $settings->whatsapp_number) {
+            \App\Jobs\SendWhatsAppJob::dispatch(
+                $settings->whatsapp_number,
+                'new_fine',
+                [
+                    'company_name' => $company->name,
+                    'vehicle_name' => $vehicle->vehicle_number,
+                    'plate_number' => $vehicle->plate_number_dp ?? $vehicle->plate_number ?? 'N/A',
+                    'fine_number' => $fine->fine_number,
+                    'amount' => number_format($fine->amount, 2),
+                    'violation' => $fine->fine_type ?? 'Traffic Violation',
+                    'authority' => $fine->authority,
+                    'date' => \Carbon\Carbon::parse($fine->fine_date)->format('d M Y'),
+                ]
+            );
+        }
 
         return redirect()->route('company.fines.checker')
             ->with('success', 'Fine recorded successfully.');

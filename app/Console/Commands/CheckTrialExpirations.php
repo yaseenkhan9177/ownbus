@@ -41,6 +41,22 @@ class CheckTrialExpirations extends Command
                 'company_id' => $subscription->company_id,
                 'expires_at' => $subscription->trial_ends_at,
             ]);
+
+            $company = $subscription->company;
+            $settings = $company->companyNotificationSettings;
+            if ($settings && $settings->whatsapp_enabled && $settings->notify_subscription && $settings->whatsapp_number) {
+                \App\Jobs\SendWhatsAppJob::dispatch(
+                    $settings->whatsapp_number,
+                    'subscription_expiring',
+                    [
+                        'company_name' => $company->name,
+                        'plan_name' => $subscription->plan->name ?? 'Trial',
+                        'days' => 3,
+                        'expiry_date' => \Carbon\Carbon::parse($subscription->trial_ends_at)->format('d M Y'),
+                        'amount' => $subscription->plan->price_yearly ?? 0,
+                    ]
+                );
+            }
         }
 
         // Find trials expiring today

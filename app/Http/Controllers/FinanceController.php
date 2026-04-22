@@ -95,6 +95,22 @@ class FinanceController extends Controller
             }
         });
 
+        $company = auth()->user()->company;
+        $settings = $company->companyNotificationSettings;
+        if ($settings && $settings->whatsapp_enabled && $settings->notify_payment && $settings->whatsapp_number) {
+            \App\Jobs\SendWhatsAppJob::dispatch(
+                $settings->whatsapp_number,
+                'payment_received',
+                [
+                    'company_name' => $company->name,
+                    'customer_name' => $rental->customer->name ?? $rental->customer->company_name,
+                    'amount' => number_format($validated['amount'], 2),
+                    'reference' => $validated['reference'] ?? 'N/A',
+                    'date' => \Carbon\Carbon::parse($validated['payment_date'])->format('d M Y'),
+                ]
+            );
+        }
+
         return back()->with('success', 'Payment recorded successfully.');
     }
 }

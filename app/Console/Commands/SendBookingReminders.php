@@ -58,6 +58,37 @@ class SendBookingReminders extends Command
 
         $this->info("Sent {$count} booking reminders.");
 
+        // --- Rental Expiring Alerts ---
+        $expiringRentals = Rental::with(['customer', 'vehicle'])
+            ->whereIn('status', ['active', 'confirmed'])
+            ->whereBetween('end_date', [$reminderStart, $reminderEnd])
+            ->get();
+            
+        $expCount = 0;
+        
+        $company = \App\Models\Company::where('database_name', config('database.connections.tenant.database'))->first();
+        if ($company) {
+            $settings = $company->companyNotificationSettings;
+            if ($settings && $settings->whatsapp_enabled && $settings->notify_rental_expiring && $settings->whatsapp_number) {
+                foreach ($expiringRentals as $rental) {
+                    \App\Jobs\SendWhatsAppJob::dispatch(
+                        $settings->whatsapp_number,
+                        'rental_expiring',
+                        [
+                            'company_name' => $company->name,
+                            'customer_name' => $rental->customer->name ?? $rental->customer->company_name,
+                            'vehicle_name' => $rental->vehicle ? $rental->vehicle->vehicle_number : 'N/A',
+                            'days' => 1,
+                            'expiry_date' => \Carbon\Carbon::parse($rental->end_date)->format('d M Y'),
+                        ]
+                    );
+                    $expCount++;
+                }
+            }
+        }
+
+        $this->info("Sent {$expCount} rental expiring alerts.");
+
         return 0;
     }
 }

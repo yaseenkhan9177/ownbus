@@ -28,7 +28,12 @@ class SendExpiryAlerts extends Command
             foreach ($companies as $company) {
                 // Determine if this company has notification settings configured
                 $settings = $company->notificationSetting;
-                if (!$settings || (!$settings->admin_email && !$settings->admin_whatsapp)) {
+                $ultraMsgSettings = $company->companyNotificationSettings;
+                
+                $hasOldSettings = $settings && ($settings->admin_email || $settings->admin_whatsapp);
+                $hasNewSettings = $ultraMsgSettings && $ultraMsgSettings->whatsapp_enabled && $ultraMsgSettings->whatsapp_number;
+
+                if (!$hasOldSettings && !$hasNewSettings) {
                     continue; // Skip if no notification routes configured
                 }
 
@@ -62,7 +67,23 @@ class SendExpiryAlerts extends Command
                         foreach ($checks as $label => $date) {
                             if ($date && $date->toDateString() === $targetDate) {
                                 $this->warn("  ⚠ [Company {$company->name}] Vehicle {$vehicle->vehicle_number}: {$label} expires in {$days} day(s)");
-                                $notifiable->notify(new AdminDocumentExpiryNotification($label, "Vehicle {$vehicle->vehicle_number}", $days));
+                                if ($hasOldSettings) {
+                                    $notifiable->notify(new AdminDocumentExpiryNotification($label, "Vehicle {$vehicle->vehicle_number}", $days));
+                                }
+
+                                if ($hasNewSettings && $ultraMsgSettings->notify_document_expiring) {
+                                    \App\Jobs\SendWhatsAppJob::dispatch(
+                                        $ultraMsgSettings->whatsapp_number,
+                                        $days <= 1 ? 'document_expired' : 'document_expiring',
+                                        [
+                                            'company_name' => $company->name,
+                                            'vehicle_name' => $vehicle->vehicle_number,
+                                            'document_type' => $label,
+                                            'days' => $days,
+                                            'expiry_date' => $date->format('d M Y'),
+                                        ]
+                                    );
+                                }
                             }
                         }
                     }
@@ -87,7 +108,23 @@ class SendExpiryAlerts extends Command
                         foreach ($checks as $label => $date) {
                             if ($date && $date->toDateString() === $targetDate) {
                                 $this->warn("  ⚠ [Company {$company->name}] Driver {$driver->name}: {$label} expires in {$days} day(s)");
-                                $notifiable->notify(new AdminDocumentExpiryNotification($label, "Driver {$driver->name}", $days));
+                                if ($hasOldSettings) {
+                                    $notifiable->notify(new AdminDocumentExpiryNotification($label, "Driver {$driver->name}", $days));
+                                }
+
+                                if ($hasNewSettings && $ultraMsgSettings->notify_driver_license) {
+                                    \App\Jobs\SendWhatsAppJob::dispatch(
+                                        $ultraMsgSettings->whatsapp_number,
+                                        'driver_license_expiring',
+                                        [
+                                            'company_name' => $company->name,
+                                            'driver_name' => $driver->name,
+                                            'license_number' => $driver->license_number ?? 'N/A',
+                                            'days' => $days,
+                                            'expiry_date' => $date->format('d M Y'),
+                                        ]
+                                    );
+                                }
                             }
                         }
                     }

@@ -117,6 +117,68 @@
                 </div>
             </div>
 
+            {{-- Section 1.75: Traffic Fine Integration --}}
+            <div class="space-y-4 bg-slate-800/30 p-5 rounded-2xl border border-slate-700/50" x-data="fineCheckForm()">
+                <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+                    <h3 class="text-xs font-black text-amber-400 uppercase tracking-widest border-l-2 border-amber-400 pl-2">🚔 Traffic Fine Check Details</h3>
+                    <span class="text-[10px] text-slate-400 font-bold uppercase">Automated Integration</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Plate Source</label>
+                        <select name="plate_source" x-model="plateSource" @change="updatePreview" class="w-full bg-slate-900 dark:bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-white focus:ring-2 focus:ring-amber-500 transition-all">
+                            <option value="">Select Source</option>
+                            <option value="Dubai">Dubai</option>
+                            <option value="Abu Dhabi">Abu Dhabi</option>
+                            <option value="Sharjah">Sharjah</option>
+                            <option value="Ajman">Ajman</option>
+                            <option value="RAK">RAK</option>
+                            <option value="Fujairah">Fujairah</option>
+                            <option value="UAQ">UAQ</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="Kuwait">Kuwait</option>
+                            <option value="Bahrain">Bahrain</option>
+                            <option value="Qatar">Qatar</option>
+                            <option value="Oman">Oman</option>
+                        </select>
+                        @error('plate_source') <p class="text-[10px] font-bold text-rose-500 mt-1 uppercase">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Plate Number</label>
+                        <input type="text" name="plate_number_dp" x-model="plateNumber" @input="updatePreview"
+                            class="w-full bg-slate-900 dark:bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500 transition-all"
+                            placeholder="e.g. 12345">
+                        @error('plate_number_dp') <p class="text-[10px] font-bold text-rose-500 mt-1 uppercase">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="space-y-1" x-show="plateSource === 'Dubai' || plateSource === 'Sharjah' || plateSource === 'Ajman'">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Plate Code</label>
+                        <select name="plate_code_dp" x-model="plateCode" @change="updatePreview" class="w-full bg-slate-900 dark:bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold text-white focus:ring-2 focus:ring-amber-500 transition-all">
+                            <option value="">Code</option>
+                            @foreach(array_merge(range('A','Z'), ['AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ']) as $code)
+                                <option value="{{ $code }}">{{ $code }}</option>
+                            @endforeach
+                        </select>
+                        @error('plate_code_dp') <p class="text-[10px] font-bold text-rose-500 mt-1 uppercase">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                {{-- Live Preview --}}
+                <div class="mt-4 p-4 bg-slate-900 rounded-xl border border-slate-700/50 flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl" x-text="flag"></div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Live Plate Preview</p>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-black text-white" x-text="plateSource || '—'"></span>
+                            <span class="text-sm font-black text-amber-400" x-show="plateCode" x-text="plateCode"></span>
+                            <span class="text-lg font-mono font-black text-white" x-text="plateNumber || '—'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Section 2: Technical Specifications --}}
             <div class="space-y-4">
                 <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-l-2 border-cyan-500 pl-2">Technical Archetype</h3>
@@ -257,6 +319,28 @@
         if(emirateSelect.value) {
             plateHint.textContent = hints[emirateSelect.value] || '';
         }
+    });
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('fineCheckForm', () => ({
+            plateSource: '{{ old("plate_source", $vehicle->plate_source ?? "") }}',
+            plateNumber: '{{ old("plate_number_dp", $vehicle->plate_number_dp ?? "") }}',
+            plateCode: '{{ old("plate_code_dp", $vehicle->plate_code_dp ?? "") }}',
+            flag: '🏳️',
+            flags: {
+                'Dubai': '🇦🇪', 'Abu Dhabi': '🇦🇪', 'Sharjah': '🇦🇪', 'Ajman': '🇦🇪', 'RAK': '🇦🇪', 'Fujairah': '🇦🇪', 'UAQ': '🇦🇪',
+                'Saudi Arabia': '🇸🇦', 'Kuwait': '🇰🇼', 'Bahrain': '🇧🇭', 'Qatar': '🇶🇦', 'Oman': '🇴🇲'
+            },
+            init() {
+                this.updatePreview();
+            },
+            updatePreview() {
+                this.flag = this.flags[this.plateSource] || '🏳️';
+                if (this.plateSource !== 'Dubai' && this.plateSource !== 'Sharjah' && this.plateSource !== 'Ajman') {
+                    this.plateCode = '';
+                }
+            }
+        }))
     });
 </script>
 @endpush

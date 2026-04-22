@@ -95,7 +95,24 @@ class MaintenanceController extends Controller
             $record = $this->maintenanceService->createRecord($data, $items);
             $this->maintenanceService->completeRecord($record, ['completed_date' => $data['completed_date'] ?? now()]);
         } else {
-            $this->maintenanceService->createRecord($data, $items);
+            $record = $this->maintenanceService->createRecord($data, $items);
+        }
+
+        $company = auth()->user()->company;
+        $settings = $company->companyNotificationSettings;
+        if ($data['status'] === 'scheduled' && $settings && $settings->whatsapp_enabled && $settings->notify_maintenance && $settings->whatsapp_number) {
+            $vehicle = \App\Models\Vehicle::find($data['vehicle_id']);
+            \App\Jobs\SendWhatsAppJob::dispatch(
+                $settings->whatsapp_number,
+                'maintenance_due',
+                [
+                    'company_name' => $company->name,
+                    'vehicle_name' => $vehicle ? $vehicle->vehicle_number : 'N/A',
+                    'service_type' => ucfirst($data['type']),
+                    'due_date' => \Carbon\Carbon::parse($data['scheduled_date'] ?? now())->format('d M Y'),
+                    'garage_name' => 'Designated Workshop',
+                ]
+            );
         }
 
         return redirect()->route('company.maintenance.index')->with('success', 'Maintenance record created successfully.');

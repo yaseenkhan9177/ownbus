@@ -157,6 +157,56 @@
                         </div>
 
                         <div class="space-y-6">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-l-2 border-amber-500 pl-2">Plate & Fine Info</h3>
+                            @if($vehicle->plate_number_dp)
+                            @php
+                                $flags = [
+                                    'Dubai'=>'🇦🇪','Abu Dhabi'=>'🇦🇪','Sharjah'=>'🇦🇪','Ajman'=>'🇦🇪','RAK'=>'🇦🇪','Fujairah'=>'🇦🇪','UAQ'=>'🇦🇪',
+                                    'Saudi Arabia'=>'🇸🇦','Kuwait'=>'🇰🇼','Bahrain'=>'🇧🇭','Qatar'=>'🇶🇦','Oman'=>'🇴🇲'
+                                ];
+                                $flag = $flags[$vehicle->plate_source] ?? '🏳️';
+                                $links = [
+                                    'Dubai' => 'https://www.dubaipolice.gov.ae/app/services/fine-payment/search',
+                                    'Abu Dhabi' => 'https://www.adpolice.gov.ae/en/services/traffic-services/traffic-fines-inquiry',
+                                    'Sharjah' => 'https://www.sharjahpolice.gov.ae',
+                                    'Ajman' => 'https://www.ajmanpolice.gov.ae',
+                                    'RAK' => 'https://www.rakpolice.gov.ae',
+                                    'Fujairah' => 'https://www.fujairahpolice.gov.ae',
+                                    'UAQ' => 'https://uaqpolice.gov.ae',
+                                    'Saudi Arabia' => 'https://www.absher.sa',
+                                    'Kuwait' => 'https://www.moi.gov.kw',
+                                    'Bahrain' => 'https://www.bahrain.bh',
+                                    'Qatar' => 'https://www.moi.gov.qa',
+                                    'Oman' => 'https://www.rop.gov.om'
+                                ];
+                                $officialLink = $links[$vehicle->plate_source] ?? '#';
+                            @endphp
+                            <div class="p-4 bg-slate-900 rounded-xl border border-slate-700/50 flex flex-col space-y-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl">{{ $flag }}</div>
+                                    <div>
+                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $vehicle->plate_source }} Plate</p>
+                                        <p class="text-sm font-mono font-black text-white">{{ $vehicle->plate_code_dp ? $vehicle->plate_code_dp . ' ' : '' }}{{ $vehicle->plate_number_dp }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="{{ $officialLink }}" target="_blank" rel="noopener" class="flex-1 flex justify-center items-center px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-amber-500/20">
+                                        Check Fines
+                                    </a>
+                                    <a href="{{ route('company.fines.checker') }}" class="flex items-center justify-center px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all border border-slate-700">
+                                        Internal DB
+                                    </a>
+                                </div>
+                            </div>
+                            @else
+                            <div class="p-4 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center text-center">
+                                <p class="text-sm font-bold text-slate-500 uppercase">No Plate Data</p>
+                                <a href="{{ route('company.fleet.edit', $vehicle) }}" class="mt-2 text-[10px] font-black text-cyan-500 uppercase tracking-widest hover:underline">Configure Asset</a>
+                            </div>
+                            @endif
+                        </div>
+
+                        <div class="space-y-6">
                             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-l-2 border-cyan-500 pl-2">Specifications</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div class="p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800">
@@ -261,6 +311,7 @@
                                     <tr>
                                         <td colspan="5" class="py-8 text-center text-xs text-slate-400 font-bold uppercase tracking-widest">No deployment records found</td>
                                     </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

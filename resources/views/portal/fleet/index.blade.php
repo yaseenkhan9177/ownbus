@@ -107,6 +107,7 @@
                     <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                         <th class="py-4 px-6">Asset Identification</th>
                         <th class="py-4 px-4">Class</th>
+                        <th class="py-4 px-4">Plate Info</th>
                         <th class="py-4 px-4">Deployment Status</th>
                         <th class="py-4 px-4">Logistics (ODO)</th>
                         <th class="py-4 px-4">Yield (Gross)</th>
@@ -157,6 +158,26 @@
                                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $vehicle->type }}</span>
                                 <span class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ $vehicle->seating_capacity }} Units</span>
                             </div>
+                        </td>
+                        <td class="py-4 px-4">
+                            @php
+                                $flags = [
+                                    'Dubai'=>'🇦🇪','Abu Dhabi'=>'🇦🇪','Sharjah'=>'🇦🇪','Ajman'=>'🇦🇪','RAK'=>'🇦🇪','Fujairah'=>'🇦🇪','UAQ'=>'🇦🇪',
+                                    'Saudi Arabia'=>'🇸🇦','Kuwait'=>'🇰🇼','Bahrain'=>'🇧🇭','Qatar'=>'🇶🇦','Oman'=>'🇴🇲'
+                                ];
+                                $flag = $flags[$vehicle->plate_source] ?? '🏳️';
+                            @endphp
+                            @if($vehicle->plate_number_dp)
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg" title="{{ $vehicle->plate_source }}">{{ $flag }}</span>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-mono font-black text-slate-900 dark:text-white">{{ $vehicle->plate_code_dp ? $vehicle->plate_code_dp . ' ' : '' }}{{ $vehicle->plate_number_dp }}</span>
+                                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{{ $vehicle->plate_source }}</span>
+                                </div>
+                            </div>
+                            @else
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">No Plate</span>
+                            @endif
                         </td>
                         <td class="py-4 px-4">
                             @php

@@ -58,6 +58,19 @@ class CompanyController extends Controller
 
         $company->update(['status' => 'active']);
 
+        $settings = $company->companyNotificationSettings;
+        if ($settings && $settings->whatsapp_enabled && $settings->whatsapp_number) {
+            \App\Jobs\SendWhatsAppJob::dispatch(
+                $settings->whatsapp_number,
+                'new_registration',
+                [
+                    'company_name' => $company->name,
+                    'email' => $company->email,
+                    'plan_name' => $company->subscription->plan->name ?? 'Standard',
+                ]
+            );
+        }
+
         return back()->with('success', "Tenant {$company->name} has been approved and is now active.");
     }
 

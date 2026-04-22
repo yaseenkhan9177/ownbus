@@ -565,11 +565,11 @@ $authorityLinks = [
                 {{-- Vehicle --}}
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Vehicle <span class="text-red-400">*</span></label>
-                    <select name="vehicle_id" required class="w-full bg-slate-800 border border-slate-700 text-white text-sm font-bold rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none">
+                    <select name="vehicle_id" x-model="recordVehicleId" @change="onVehicleSelect($event)" required class="w-full bg-slate-800 border border-slate-700 text-white text-sm font-bold rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none">
                         <option value="">— Select Vehicle —</option>
                         @foreach($vehicles as $v)
-                        <option value="{{ $v->id }}" {{ old('vehicle_id') == $v->id ? 'selected' : '' }}>
-                            {{ $v->vehicle_number }} {{ $v->plate_number ? '— '.$v->plate_number : '' }}
+                        <option value="{{ $v->id }}" data-source="{{ $v->plate_source }}" {{ old('vehicle_id') == $v->id ? 'selected' : '' }}>
+                            {{ $v->vehicle_number }} {{ $v->plate_number_dp ? '— '.$v->plate_number_dp : ($v->plate_number ? '— '.$v->plate_number : '') }}
                         </option>
                         @endforeach
                     </select>
@@ -579,7 +579,7 @@ $authorityLinks = [
                 {{-- Authority --}}
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Traffic Authority <span class="text-red-400">*</span></label>
-                    <select name="authority" required class="w-full bg-slate-800 border border-slate-700 text-white text-sm font-bold rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none">
+                    <select name="authority" x-model="recordAuthority" required class="w-full bg-slate-800 border border-slate-700 text-white text-sm font-bold rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none">
                         <option value="">— Select Authority —</option>
                         <optgroup label="UAE — Emirates">
                             <option value="Dubai Police" {{ old('authority')=='Dubai Police'?'selected':'' }}>Dubai Police</option>
@@ -754,6 +754,33 @@ function fineChecker() {
         officialLink: '#',
         plateHint: '',
         plateCodes: [],
+        
+        recordVehicleId: '{{ old("vehicle_id") }}',
+        recordAuthority: '{{ old("authority") }}',
+
+        onVehicleSelect(e) {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            const source = selectedOption.getAttribute('data-source');
+            if (source) {
+                const authorityMap = {
+                    'Dubai': 'Dubai Police',
+                    'Abu Dhabi': 'Abu Dhabi Police',
+                    'Sharjah': 'Sharjah Police',
+                    'Ajman': 'Ajman Police',
+                    'RAK': 'RAK Police',
+                    'Fujairah': 'Fujairah Police',
+                    'UAQ': 'UAQ Police',
+                    'Saudi Arabia': 'Saudi Muroor / Absher',
+                    'Kuwait': 'Kuwait MOI',
+                    'Bahrain': 'Bahrain MOI',
+                    'Qatar': 'Qatar MOI',
+                    'Oman': 'Oman ROP'
+                };
+                if (authorityMap[source]) {
+                    this.recordAuthority = authorityMap[source];
+                }
+            }
+        },
 
         selectAuthority(code, name) {
             this.selectedAuthority = code;
