@@ -422,7 +422,7 @@
         $gaugeDashoffset = $gaugeCircumference - ($gaugeCircumference * $healthScore / 100);
     @endphp
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6 stagger-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 mb-6 stagger-4">
         {{-- Alert Wall --}}
         <div class="lg:col-span-2">
             @if($hasCriticalRisks)
@@ -472,10 +472,10 @@
         @php
             $gaugeStroke = $healthScore >= 75 ? '#10B981' : ($healthScore >= 50 ? '#F59E0B' : '#EF4444');
         @endphp
-        <div class="glass-card rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden">
+        <div class="glass-card rounded-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden lg:col-span-1">
             <p class="text-[10px] font-black uppercase tracking-widest mb-4 z-10" style="color:var(--text-secondary)">Company Health</p>
 
-            <div class="relative w-36 h-36 mb-4 z-10">
+            <div class="relative w-28 h-28 mb-4 z-10">
                 <svg class="w-full h-full -rotate-90" viewBox="0 0 192 192">
                     <circle cx="96" cy="96" r="80" stroke-width="12" fill="transparent" stroke="#1F2937"/>
                     <circle cx="96" cy="96" r="80" stroke-width="12" fill="transparent" stroke-linecap="round"
@@ -485,46 +485,70 @@
                         class="gauge-animated"/>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <span class="text-4xl font-black text-white leading-none">{{ $healthScore }}</span>
-                    <span class="text-[9px] font-black text-slate-500 uppercase mt-1">/ 100</span>
+                    <span class="text-3xl font-black text-white leading-none">{{ $healthScore }}</span>
+                    <span class="text-[8px] font-black text-slate-500 uppercase mt-1">/ 100</span>
                 </div>
             </div>
 
-            <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest z-10
+            <span class="px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest z-10
                 {{ $healthColor === 'emerald' ? 'risk-low' : ($healthColor === 'amber' ? 'risk-medium' : 'risk-high') }}">
                 {{ $healthStatus }}
             </span>
+        </div>
 
-            {{-- Sub-metrics --}}
-            @php
-                $factors = collect($data['risk_score']['factors'] ?? []);
-                $maintOverdue = $factors->firstWhere('label', 'Maintenance Overdue');
-                $driverDocs = $factors->firstWhere('label', 'Missing/Expired Driver Documents');
-                $arAging = $factors->firstWhere('label', 'Unpaid Invoices (>30 Days)');
-            @endphp
-            <div class="grid grid-cols-2 gap-2 w-full mt-4 z-10 border-t border-white/5 pt-4">
-                <div class="text-center">
-                    <span class="text-xs font-black {{ isset($maintOverdue) && $maintOverdue['penalty'] > 0 ? 'text-rose-400' : 'text-emerald-400' }}">
-                        {{ isset($maintOverdue) ? $maintOverdue['penalty'].'%' : '0%' }}
-                    </span>
-                    <p class="text-[8px] text-slate-600 uppercase tracking-widest mt-0.5">Maint %</p>
+        {{-- Subscription Status Card --}}
+        <div class="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden lg:col-span-1 border-l-4 
+            {{ $company->subscription_badge_color === 'red' ? 'border-rose-500' : '' }}
+            {{ $company->subscription_badge_color === 'orange' ? 'border-amber-600' : '' }}
+            {{ $company->subscription_badge_color === 'yellow' ? 'border-yellow-500' : '' }}
+            {{ $company->subscription_badge_color === 'green' ? 'border-emerald-500' : '' }}
+            {{ $company->subscription_badge_color === 'slate' ? 'border-slate-500' : '' }}
+        ">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-lg">📅</span>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subscription Status</h3>
+            </div>
+            
+            <div class="flex-1 space-y-4">
+                <div>
+                    <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">Status</p>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black text-white uppercase">{{ $company->subscription_label }}</span>
+                        <span class="w-2 h-2 rounded-full 
+                            {{ $company->subscription_badge_color === 'red' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]' : '' }}
+                            {{ $company->subscription_badge_color === 'orange' ? 'bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)]' : '' }}
+                            {{ $company->subscription_badge_color === 'yellow' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]' : '' }}
+                            {{ $company->subscription_badge_color === 'green' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : '' }}
+                            {{ $company->subscription_badge_color === 'slate' ? 'bg-slate-500 shadow-[0_0_8px_rgba(100,116,139,0.6)]' : '' }}
+                        "></span>
+                    </div>
                 </div>
-                <div class="text-center">
-                    <span class="text-xs font-black {{ isset($driverDocs) && $driverDocs['penalty'] > 0 ? 'text-amber-400' : 'text-emerald-400' }}">
-                        {{ isset($driverDocs) ? $driverDocs['penalty'].'%' : '0%' }}
-                    </span>
-                    <p class="text-[8px] text-slate-600 uppercase tracking-widest mt-0.5">Driver Docs</p>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">Days Left</p>
+                        <p class="text-xl font-black text-white">{{ $company->days_remaining }}</p>
+                    </div>
+                    <div>
+                        @if($company->subscription_status === 'active' && $company->subscription)
+                            <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">Renews</p>
+                            <p class="text-[11px] font-bold text-slate-200">
+                                {{ $company->subscription->current_period_end ? $company->subscription->current_period_end->format('d M Y') : 'N/A' }}
+                            </p>
+                        @else
+                            <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">Expires</p>
+                            <p class="text-[11px] font-bold text-slate-200">
+                                {{ $company->trial_ends_at ? $company->trial_ends_at->format('d M Y') : 'N/A' }}
+                            </p>
+                        @endif
+                    </div>
                 </div>
-                <div class="text-center">
-                    <span class="text-xs font-black {{ isset($arAging) && $arAging['penalty'] > 0 ? 'text-rose-400' : 'text-emerald-400' }}">
-                        {{ isset($arAging) ? $arAging['penalty'].'%' : '0%' }}
-                    </span>
-                    <p class="text-[8px] text-slate-600 uppercase tracking-widest mt-0.5">AR Aging</p>
-                </div>
-                <div class="text-center">
-                    <span class="text-xs font-black text-emerald-400">0%</span>
-                    <p class="text-[8px] text-slate-600 uppercase tracking-widest mt-0.5">Fines Ovrd</p>
-                </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-white/5">
+                <a href="{{ route('subscription.upgrade') }}" class="w-full py-2 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-[10px] font-black uppercase tracking-widest text-center rounded-lg transition-all shadow-lg flex items-center justify-center gap-2">
+                    Upgrade Now <span class="text-xs">→</span>
+                </a>
             </div>
         </div>
     </div>

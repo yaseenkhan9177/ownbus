@@ -63,6 +63,29 @@ class CompanyRegistrationController extends Controller
                 'company_id' => $company->id,
                 'role' => 'company_admin',
             ]);
+
+            // 5. Assign 7-Day Trial
+            $company->update([
+                'trial_ends_at' => now()->addDays(7),
+                'subscription_status' => 'trial',
+            ]);
+
+            $subscription = \App\Models\Subscription::create([
+                'company_id' => $company->id,
+                'plan_id' => 1,
+                'status' => 'trial',
+                'trial_starts_at' => now(),
+                'trial_ends_at' => now()->addDays(7),
+                'trial_used' => true,
+            ]);
+
+            // 6. Send WhatsApp Notification
+            $ownerEmail = env('OWNER_EMAIL', 'ykcaptain2223@gmail.com');
+            $ownerPhone = env('OWNER_WHATSAPP', '+923409172223');
+            $date = now()->addDays(7)->format('d M Y');
+            $message = "🎉 Welcome to OwnBus!\nYour 7-day FREE TRIAL has started!\nTrial ends: {$date}\nAfter trial, contact us to subscribe:\n📧 {$ownerEmail}\n📱 {$ownerPhone}\nownbus.software";
+            
+            \App\Jobs\SendWhatsAppJob::dispatch($request->phone, null, [], $message);
         });
 
         return redirect()->route('register.company.pending')->with('sweet_alert', [

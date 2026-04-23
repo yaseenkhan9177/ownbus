@@ -23,6 +23,8 @@ class Subscription extends Model
         'current_period_end',
         'stripe_subscription_id',
         'stripe_customer_id',
+        'trial_starts_at',
+        'trial_used',
     ];
 
     protected $casts = [
@@ -30,6 +32,8 @@ class Subscription extends Model
         'grace_ends_at' => 'datetime',
         'current_period_start' => 'datetime',
         'current_period_end' => 'datetime',
+        'trial_starts_at' => 'datetime',
+        'trial_used' => 'boolean',
     ];
 
     // Relationships
@@ -61,12 +65,16 @@ class Subscription extends Model
     // Helper Methods
     public function isActive(): bool
     {
+        // If status is trial, check if trial_ends_at is in the future
+        if ($this->status === 'trial') {
+            return $this->trial_ends_at && $this->trial_ends_at->isFuture();
+        }
         return in_array($this->status, ['trialing', 'active', 'grace']);
     }
 
     public function isTrialing(): bool
     {
-        return $this->status === 'trialing';
+        return in_array($this->status, ['trialing', 'trial']);
     }
 
     public function isInGracePeriod(): bool

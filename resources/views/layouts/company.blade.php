@@ -170,8 +170,22 @@
                         </div>
                     </div>
                     <div class="text-right hidden sm:block">
-                        <p class="text-sm font-bold truncate max-w-[150px]">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-500 uppercase">{{ auth()->user()->role === 'company_admin' ? 'Owner' : 'Staff' }}</p>
+                        <p class="text-sm font-bold truncate max-w-[150px] text-slate-700 dark:text-slate-200 leading-none mb-1">{{ auth()->user()->name }}</p>
+                        <div class="flex items-center justify-end gap-2">
+                             <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{{ auth()->user()->role === 'company_admin' ? 'Owner' : 'Staff' }}</p>
+                             @php $company = auth()->user()->company; @endphp
+                             @if($company && $company->subscription_status !== 'active' || ($company->subscription_status === 'active' && $company->days_remaining < 30))
+                             <span class="px-1.5 py-0.5 rounded text-[9px] font-black tracking-tight uppercase flex items-center gap-1
+                                {{ $company->subscription_badge_color === 'red' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : '' }}
+                                {{ $company->subscription_badge_color === 'orange' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : '' }}
+                                {{ $company->subscription_badge_color === 'yellow' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' : '' }}
+                                {{ $company->subscription_badge_color === 'green' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : '' }}
+                                {{ $company->subscription_badge_color === 'slate' ? 'bg-slate-500/10 text-slate-500 border border-slate-500/20' : '' }}
+                             ">
+                                <span class="animate-pulse">🕐</span> {{ $company->days_remaining }} {{ Str::plural('DAY', $company->days_remaining) }} LEFT
+                             </span>
+                             @endif
+                        </div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -182,6 +196,41 @@
 
             <!-- Main Content -->
             <main class="flex-1 p-4 sm:p-6 lg:p-8">
+                <!-- Trial Banner -->
+                @php
+                    $userCompany = auth()->user()->company ?? null;
+                    $trialBannerVisible = false;
+                    if ($userCompany && $userCompany->subscription_status === 'trial' && $userCompany->trial_ends_at) {
+                        $trialDaysLeft = max(0, now()->diffInDays($userCompany->trial_ends_at, false));
+                        $trialBannerVisible = $trialDaysLeft >= 0;
+                    }
+                @endphp
+
+                @if($trialBannerVisible)
+                <div class="mb-6 rounded-xl border p-4 flex items-center justify-between {{ $trialDaysLeft > 3 ? 'bg-emerald-900/30 border-emerald-500/50' : 'bg-amber-900/30 border-amber-500/50' }}">
+                    <div class="flex items-center gap-4">
+                        <div class="p-2 rounded-lg {{ $trialDaysLeft > 3 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400' }}">
+                            @if($trialDaysLeft > 3)
+                            <span class="text-xl">🎉</span>
+                            @else
+                            <span class="text-xl">⚠️</span>
+                            @endif
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold {{ $trialDaysLeft > 3 ? 'text-emerald-400' : 'text-amber-400' }} uppercase tracking-wider">
+                                {{ $trialDaysLeft > 3 ? 'FREE TRIAL ACTIVE' : 'TRIAL ENDING SOON' }}
+                            </h3>
+                            <p class="text-xs text-slate-300 mt-1">
+                                {{ $trialDaysLeft > 3 ? "You have {$trialDaysLeft} days left in your trial." : "Only {$trialDaysLeft} days left! Upgrade to keep access to all features." }}
+                            </p>
+                        </div>
+                    </div>
+                    <a href="{{ route('subscription.upgrade') }}" class="px-4 py-2 text-xs font-bold rounded-lg shadow-sm transition-all {{ $trialDaysLeft > 3 ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-amber-500 hover:bg-amber-600 text-white shadow-[0_0_15px_rgba(245,158,11,0.4)]' }}">
+                        UPGRADE NOW
+                    </a>
+                </div>
+                @endif
+
                 <!-- Floating Toast Notifications -->
                 <div x-data="{
                         toasts: [],

@@ -6,11 +6,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 use App\Console\Commands\CheckDocumentExpiries;
 use App\Console\Commands\CheckTrafficFines;
+use App\Console\Commands\CheckTrials;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
+Schedule::command(CheckTrials::class)->dailyAt('09:00');
 Schedule::command(CheckDocumentExpiries::class)->dailyAt('00:00');
 Schedule::command(CheckTrafficFines::class)->dailyAt('04:30');
 

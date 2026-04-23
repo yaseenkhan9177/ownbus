@@ -152,7 +152,7 @@
         </div>
     </div>
 
-    <form id="rentalForm" @submit.prevent="submit">
+    <form id="rentalForm" action="{{ route('company.rentals.store') }}" @submit.prevent="submit">
         @csrf
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
             
@@ -206,8 +206,8 @@
                             <input type="hidden" name="rental_type" x-model="rentalType">
                             <input type="hidden" name="rate_type" x-model="rateType">
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <template x-for="type in [{id:'daily', icon:'📅', label:'Daily'}, {id:'weekly', icon:'📆', label:'Weekly'}, {id:'monthly', icon:'🗓️', label:'Monthly'}, {id:'distance', icon:'🗺️', label:'Distance'}]">
-                                    <div class="toggle-card p-4 text-center" :class="{ 'selected': rentalType === type.id }" @click="rentalType = type.id; rateType = (type.id==='distance'?'daily':type.id);">
+                                <template x-for="type in [{id:'daily', icon:'📅', label:'Daily'}, {id:'hourly', icon:'⏱️', label:'Hourly'}, {id:'monthly', icon:'🗓️', label:'Monthly'}, {id:'distance', icon:'🗺️', label:'Distance'}]">
+                                    <div class="toggle-card p-4 text-center" :class="{ 'selected': rentalType === type.id }" @click="rentalType = type.id; rateType = (type.id==='distance'?'daily':(type.id==='hourly'?'daily':type.id));">
                                         <div class="text-2xl mb-2" x-text="type.icon"></div>
                                         <p class="text-xs font-black text-white uppercase tracking-widest" x-text="type.label"></p>
                                     </div>
@@ -654,17 +654,20 @@
                     } else {
                         // Handle Laravel validation errors (422)
                         if(data.errors) {
-                            alert('Validation Error: ' + Object.values(data.errors).flat().join('\n'));
+                            alert('Validation Error:\n' + Object.values(data.errors).flat().join('\n'));
                             this.step = 1;
+                        } else if(data.message) {
+                            alert('Server Error: ' + data.message);
+                        } else if(data.error) {
+                            alert('Error: ' + data.error);
                         } else {
                             // Fallback if not standard JSON
-                            alert('Error saving rental. Check your inputs.');
+                            alert('Error saving rental. Check your inputs.\nResponse: ' + JSON.stringify(data));
                         }
                     }
                 } catch (e) {
                     console.error(e);
-                    // Fallback to standard form submit if fetch fails completely
-                    form.submit();
+                    alert('Network error or invalid server response.');
                 } finally {
                     this.submitting = false;
                 }

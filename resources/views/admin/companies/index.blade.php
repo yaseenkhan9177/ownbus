@@ -96,6 +96,7 @@
                         <th class="px-6 py-4 font-semibold">Tenant Organization</th>
                         <th class="px-6 py-4 font-semibold">Status</th>
                         <th class="px-6 py-4 font-semibold">Current Plan</th>
+                        <th class="px-6 py-4 font-semibold text-center">Days Left</th>
                         <th class="px-6 py-4 font-semibold text-center">Vehicles</th>
                         <th class="px-6 py-4 font-semibold">Registered On</th>
                         <th class="px-6 py-4 font-semibold text-right">Actions</th>
@@ -131,17 +132,32 @@
                             @endif
                         </td>
 
-                        <!-- Subscription & Plan -->
+                        <!-- Current Plan -->
                         <td class="px-6 py-4">
-                            @if($company->subscription && $company->subscription->plan)
-                            <div class="font-medium text-cyan-400">{{ $company->subscription->plan->name }}</div>
-                            <div class="text-[11px] font-mono mt-1 
-                                    {{ $company->subscription->status === 'active' ? 'text-emerald-500' : 'text-amber-500' }}">
-                                SUB: {{ strtoupper($company->subscription->status) }}
+                            @if($company->subscription)
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-200">{{ $company->subscription->plan->name ?? 'N/A' }}</span>
+                                @if($company->subscription_status === 'trial')
+                                <span class="text-[9px] font-black bg-amber-500/10 text-amber-500 px-1 py-0.5 rounded border border-amber-500/20">TRIAL</span>
+                                @endif
                             </div>
                             @else
-                            <span class="text-slate-500 italic text-xs">No Active Subscription</span>
+                            <span class="text-slate-500 italic text-xs">No Plan</span>
                             @endif
+                        </td>
+
+                        <!-- Days Left -->
+                        <td class="px-6 py-4 text-center">
+                            @php $badgeColor = $company->subscription_badge_color; @endphp
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
+                                {{ $badgeColor === 'red' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : '' }}
+                                {{ $badgeColor === 'orange' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : '' }}
+                                {{ $badgeColor === 'yellow' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' : '' }}
+                                {{ $badgeColor === 'green' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : '' }}
+                                {{ $badgeColor === 'slate' ? 'bg-slate-500/10 text-slate-500 border border-slate-500/20' : '' }}
+                            ">
+                                {{ $company->days_remaining }} DAYS
+                            </span>
                         </td>
 
                         <!-- Resources/Vehicles -->
@@ -179,15 +195,6 @@
                                 </form>
                                 @endif
 
-                                <!-- Manage License Modal Button -->
-                                @if(in_array($company->status, ['active', 'suspended']))
-                                <button type="button" @click="openLicenseModal('{{ $company->id }}', '{{ addslashes($company->name) }}')" class="text-slate-400 hover:text-indigo-400 transition-colors" title="Manage License Key / Subscription">
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                    </svg>
-                                </button>
-                                @endif
-
                                 <!-- Suspend/Unsuspend & Approve -->
                                 @if($company->status === 'pending')
                                 <form method="POST" action="{{ route('admin.companies.approve', $company->id) }}" class="inline">
@@ -198,22 +205,46 @@
                                         </svg>
                                     </button>
                                 </form>
-                                @elseif($company->status === 'active')
+                                @endif
+                            </div>
+                            
+                            <!-- Subscription Quick Actions -->
+                            <div class="flex items-center justify-end space-x-2 mt-3">
+                                @if(in_array($company->status, ['active', 'suspended', 'pending']) && $company->subscription)
+                                    <form method="POST" action="{{ route('admin.companies.grant-license', $company->id) }}" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="duration" value="month">
+                                        <button type="submit" class="px-2 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded text-[10px] font-bold hover:bg-indigo-500/20 transition-colors uppercase tracking-widest">
+                                            Activate Monthly
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.companies.grant-license', $company->id) }}" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="duration" value="year">
+                                        <button type="submit" class="px-2 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded text-[10px] font-bold hover:bg-cyan-500/20 transition-colors uppercase tracking-widest">
+                                            Activate Yearly
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.companies.extend-trial', $company->id) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-2 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded text-[10px] font-bold hover:bg-amber-500/20 transition-colors uppercase tracking-widest">
+                                            Extend Trial +7
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if($company->status === 'active')
                                 <form method="POST" action="{{ route('admin.companies.toggle-status', $company->id) }}" class="inline" onsubmit="return confirm('Suspend this tenant? They will instantly lose access.');">
                                     @csrf
-                                    <button type="submit" class="text-slate-400 hover:text-rose-400 transition-colors" title="Suspend Tenant">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                                        </svg>
+                                    <button type="submit" class="px-2 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded text-[10px] font-bold hover:bg-rose-500/20 transition-colors uppercase tracking-widest">
+                                        Suspend
                                     </button>
                                 </form>
                                 @elseif($company->status === 'suspended')
                                 <form method="POST" action="{{ route('admin.companies.toggle-status', $company->id) }}" class="inline" onsubmit="return confirm('Re-activate this suspended tenant?');">
                                     @csrf
-                                    <button type="submit" class="text-slate-400 hover:text-emerald-400 transition-colors" title="Unsuspend Tenant">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                    <button type="submit" class="px-2 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[10px] font-bold hover:bg-emerald-500/20 transition-colors uppercase tracking-widest">
+                                        Unsuspend
                                     </button>
                                 </form>
                                 @endif

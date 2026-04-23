@@ -31,11 +31,20 @@ class AdminDashboardController extends Controller
         $systemActivities = \App\Models\SystemActivity::with('tenant')->latest()->limit(20)->get();
         $systemErrors = \App\Models\SystemErrorLog::with('tenant')->latest()->limit(10)->get();
 
-        // Billing details
+        // Subscription details for overview widget
         $subscriptionsDetails = [
-            'active' => \App\Models\Subscription::where('status', 'active')->count(),
-            'expired' => \App\Models\Subscription::whereIn('status', ['canceled', 'suspended'])->count(),
-            'trialing' => \App\Models\Subscription::where('status', 'trialing')->count(),
+            'active' => \App\Models\Company::where('subscription_status', 'active')->count(),
+            'trial' => \App\Models\Company::where('subscription_status', 'trial')->count(),
+            'expiring' => \App\Models\Company::where(function($q) {
+                $q->where('subscription_status', 'trial')
+                  ->whereDate('trial_ends_at', '<=', now()->addDays(3)->toDateString())
+                  ->whereDate('trial_ends_at', '>=', now()->toDateString());
+            })->orWhereHas('subscription', function($q) {
+                $q->where('status', 'active')
+                  ->whereDate('current_period_end', '<=', now()->addDays(3)->toDateString())
+                  ->whereDate('current_period_end', '>=', now()->toDateString());
+            })->count(),
+            'expired' => \App\Models\Company::where('subscription_status', 'expired')->count(),
         ];
 
         // 4. Feeds Row

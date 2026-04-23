@@ -142,76 +142,101 @@
         </div>
     </div>
 
-    <!-- Health and Broadcast Row -->
+    <!-- Health and Subscription Overview Row -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
         <!-- System Health Monitor -->
-        <div class="lg:col-span-4 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl">
-            <h3 class="text-lg font-bold text-white tracking-tight uppercase mb-6 flex items-center">
+        <div class="lg:col-span-3 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-6 shadow-2xl">
+            <h3 class="text-sm font-bold text-white tracking-tight uppercase mb-6 flex items-center">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
-                System Health Monitor
+                System Health
             </h3>
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <!-- DB Status -->
-                <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 group hover:border-[#D4A847]/30 transition-all">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mr-4">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-[11px] font-bold text-[#D4A847] uppercase tracking-wider">Database Status</p>
-                            <p class="text-white font-bold">{{ $systemHealth['db_status'] }}</p>
-                        </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                    <div>
+                        <p class="text-[9px] font-bold text-[#D4A847] uppercase tracking-wider">DB Status</p>
+                        <p class="text-xs text-white font-bold">{{ $systemHealth['db_status'] }}</p>
+                    </div>
+                    <div class="text-emerald-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
                     </div>
                 </div>
                 <!-- Queue Status -->
-                <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 group hover:border-[#D4A847]/30 transition-all">
-                    <div class="flex items-center justify-center">
-                        <div class="w-10 h-10 rounded-lg bg-[#D4A847]/10 flex items-center justify-center text-[#D4A847] mr-4">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                        </div>
-                        <div>
-                            <p class="text-[11px] font-bold text-[#D4A847] uppercase tracking-wider">Queue System</p>
-                            <p class="text-white font-bold">{{ $systemHealth['queue_status'] }} <span class="text-slate-500 font-medium text-xs ml-1">({{ $systemHealth['queue_size'] }} pending)</span></p>
-                        </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                    <div>
+                        <p class="text-[9px] font-bold text-[#D4A847] uppercase tracking-wider">Queues</p>
+                        <p class="text-xs text-white font-bold">{{ $systemHealth['queue_status'] }} ({{ $systemHealth['queue_size'] }})</p>
                     </div>
-                </div>
-                <!-- Storage -->
-                <div class="p-4 rounded-xl bg-white/5 border border-white/5">
-                    <div class="flex justify-between items-center mb-2">
-                        <p class="text-[11px] font-bold text-[#D4A847] uppercase tracking-wider">Storage Usage</p>
-                        <span class="text-white text-xs font-bold">{{ $systemHealth['disk_usage'] }} / {{ $systemHealth['disk_total'] }}</span>
-                    </div>
-                    <div class="w-full bg-black/40 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-[#D4A847] h-full rounded-full shadow-[0_0_10px_#D4A847]" style="width: 35%"></div>
+                    <div class="text-[#D4A847]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Subscription Overview -->
+        <div class="lg:col-span-3 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#D4A847]/5 rounded-full blur-2xl"></div>
+            <h3 class="text-sm font-bold text-white tracking-tight uppercase mb-6 flex items-center">
+                <svg class="w-4 h-4 mr-3 text-[#D4A847]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                Subscription Overview
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-medium">Active</span>
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-white">{{ $subscriptionsDetails['active'] }}</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-medium">On Trial</span>
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-white">{{ $subscriptionsDetails['trial'] }}</span>
+                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 font-medium">Expiring Soon</span>
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-white">{{ $subscriptionsDetails['expiring'] }}</span>
+                        <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                    </span>
+                </div>
+                <div class="flex items-center justify-between border-t border-white/5 pt-4">
+                    <span class="text-xs text-slate-400 font-medium">Expired</span>
+                    <span class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-white">{{ $subscriptionsDetails['expired'] }}</span>
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    </span>
+                </div>
+            </div>
+
+            <a href="{{ route('admin.companies.index') }}" class="mt-6 block text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-bold text-[#D4A847] uppercase tracking-widest transition-all">
+                View All Companies →
+            </a>
+        </div>
+
         <!-- Broadcast Message Panel -->
-        <div class="lg:col-span-8 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-8 shadow-2xl relative">
-            <h3 class="text-lg font-bold text-white tracking-tight uppercase mb-6 flex items-center">
-                <svg class="w-5 h-5 mr-3 text-[#D4A847]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+        <div class="lg:col-span-6 bg-[#0A0F1E] border border-[#D4A847]/10 rounded-2xl p-6 shadow-2xl relative">
+            <h3 class="text-sm font-bold text-white tracking-tight uppercase mb-6 flex items-center">
+                <svg class="w-4 h-4 mr-3 text-[#D4A847]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
                 System-Wide Broadcast
             </h3>
             <form action="{{ route('admin.broadcasts.store') }}" method="POST">
                 @csrf
                 <div class="space-y-4">
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-2 block">Message Content</label>
-                        <textarea name="message" rows="3" class="w-full bg-black/40 border border-[#D4A847]/20 rounded-xl p-4 text-white placeholder-slate-600 focus:outline-none focus:border-[#D4A847] transition-colors" placeholder="Type message to all companies..."></textarea>
-                    </div>
+                    <textarea name="message" rows="2" class="w-full bg-black/40 border border-[#D4A847]/20 rounded-xl p-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#D4A847] transition-colors" placeholder="Type message..."></textarea>
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" name="urgent" class="hidden peer">
-                                <div class="w-5 h-5 border border-[#D4A847]/30 rounded flex items-center justify-center mr-2 peer-checked:bg-[#D4A847] peer-checked:border-[#D4A847] transition-all">
-                                    <svg class="w-3 h-3 text-[#0A0F1E] opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                </div>
-                                <span class="text-xs font-bold text-slate-400 group-hover:text-slate-200 uppercase tracking-widest">Mark as Urgent</span>
-                            </label>
-                        </div>
-                        <button type="submit" class="bg-[#242938] hover:bg-[#D4A847] hover:text-[#0A0F1E] text-[#D4A847] px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 border border-[#D4A847]/20">
+                        <label class="flex items-center cursor-pointer group">
+                            <input type="checkbox" name="urgent" class="hidden peer">
+                            <div class="w-4 h-4 border border-[#D4A847]/30 rounded flex items-center justify-center mr-2 peer-checked:bg-[#D4A847]">
+                                <svg class="w-2.5 h-2.5 text-[#0A0F1E] opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-400 group-hover:text-slate-200 uppercase">Urgent</span>
+                        </label>
+                        <button type="submit" class="bg-[#242938] hover:bg-[#D4A847] hover:text-[#0A0F1E] text-[#D4A847] px-6 py-2 rounded-lg font-bold text-[10px] transition-all border border-[#D4A847]/20 uppercase">
                             Send Broadcast
                         </button>
                     </div>

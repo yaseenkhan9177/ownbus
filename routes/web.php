@@ -121,6 +121,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'isSuperAdmin'])->gr
     Route::post('companies/{company}/approve', [\App\Http\Controllers\Admin\CompanyController::class, 'approve'])->name('companies.approve');
     Route::post('companies/{company}/toggle-status', [\App\Http\Controllers\Admin\CompanyController::class, 'toggleStatus'])->name('companies.toggle-status');
     Route::post('companies/{company}/grant-license', [\App\Http\Controllers\Admin\CompanyController::class, 'grantLicense'])->name('companies.grant-license');
+    Route::post('companies/{company}/extend-trial', [\App\Http\Controllers\Admin\CompanyController::class, 'extendTrial'])->name('companies.extend-trial');
     Route::resource('companies', \App\Http\Controllers\Admin\CompanyController::class);
     Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
 

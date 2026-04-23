@@ -98,7 +98,7 @@ class CompanyController extends Controller
     public function grantLicense(Request $request, \App\Models\Company $company)
     {
         $request->validate([
-            'plan_id' => 'required|exists:subscription_plans,id',
+            'plan_id' => 'nullable|exists:subscription_plans,id',
             'duration' => 'required|in:week,month,year',
         ]);
 
@@ -117,10 +117,14 @@ class CompanyController extends Controller
                 break;
         }
 
+        $company->update(['subscription_status' => 'active']);
+
+        $planId = $request->plan_id ?? ($company->subscription->plan_id ?? 1);
+
         \App\Models\Subscription::updateOrCreate(
             ['company_id' => $company->id],
             [
-                'plan_id' => $request->plan_id,
+                'plan_id' => $planId,
                 'status' => 'active',
                 'current_period_start' => $now,
                 'current_period_end' => $endDate,
@@ -128,6 +132,40 @@ class CompanyController extends Controller
         );
 
         return back()->with('success', "License successfully applied to {$company->name} until {$endDate->format('M d, Y')}.");
+    }
+
+    /**
+     * Extend Trial for 7 days
+     */
+    public function extendTrial(Request $request, \App\Models\Company $company)
+    {
+        $now = now();
+        // If they still have time left, add 7 days to that. Otherwise, start 7 days from now.
+        $endsAt = $company->trial_ends_at && $company->trial_ends_at > $now ? clone $company->trial_ends_at : clone $now;
+        $endsAt->addDays(7);
+        
+        $company->update([
+            'trial_ends_at' => $endsAt,
+            'subscription_status' => 'trial'
+        ]);
+
+        if ($company->subscription) {
+            $company->subscription->update([
+                'status' => 'trial',
+                'trial_ends_at' => $endsAt
+            ]);
+        } else {
+            \App\Models\Subscription::create([
+                'company_id' => $company->id,
+                'plan_id' => 1,
+                'status' => 'trial',
+                'trial_starts_at' => $now,
+                'trial_ends_at' => $endsAt,
+                'trial_used' => true,
+            ]);
+        }
+
+        return back()->with('success', "Trial extended for {$company->name} by 7 days. New expiration: {$endsAt->format('d M Y')}.");
     }
 
     /**

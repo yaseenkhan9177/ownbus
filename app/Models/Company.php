@@ -35,6 +35,12 @@ class Company extends Model
         'invoice_prefix',
         'logo_url',
         'database_name', // Tenant-isolated MySQL database
+        'trial_ends_at',
+        'subscription_status',
+    ];
+
+    protected $casts = [
+        'trial_ends_at' => 'datetime',
     ];
 
     public function branches()
@@ -85,5 +91,46 @@ class Company extends Model
     public function companyNotificationSettings()
     {
         return $this->hasOne(CompanyNotificationSettings::class);
+    }
+
+    // Subscription Helper Attributes
+    public function getDaysRemainingAttribute(): int
+    {
+        if ($this->subscription_status === 'active') {
+            $sub = $this->subscription;
+            if (!$sub || !$sub->current_period_end) return 0;
+            return max(0, (int) now()->diffInDays($sub->current_period_end, false));
+        }
+        
+        if ($this->subscription_status === 'trial') {
+            if (!$this->trial_ends_at) return 0;
+            return max(0, (int) now()->diffInDays($this->trial_ends_at, false));
+        }
+        
+        return 0;
+    }
+
+    public function getSubscriptionBadgeColorAttribute(): string
+    {
+        $days = $this->days_remaining;
+        
+        if ($this->subscription_status === 'expired') return 'red';
+        if ($this->subscription_status === 'suspended') return 'slate';
+        
+        if ($days <= 3) return 'red';
+        if ($days <= 7) return 'orange';
+        if ($days <= 14) return 'yellow';
+        return 'green';
+    }
+
+    public function getSubscriptionLabelAttribute(): string
+    {
+        return match($this->subscription_status) {
+            'trial' => 'FREE TRIAL',
+            'active' => 'ACTIVE',
+            'expired' => 'EXPIRED',
+            'suspended' => 'SUSPENDED',
+            default => 'UNKNOWN'
+        };
     }
 }
