@@ -398,6 +398,9 @@
             <a href="{{ route('company.kanban.index') }}" class="action-pill pill-orange">
                 <span class="pill-icon">👨‍✈️</span> Assign Driver
             </a>
+            <a href="{{ route('company.fines.checker') }}" class="action-pill pill-orange">
+                <span class="pill-icon">🔍</span> Fine Checker
+            </a>
             <a href="{{ route('company.fines.create') }}" class="action-pill pill-red">
                 <span class="pill-icon">🚦</span> Record Fine
             </a>

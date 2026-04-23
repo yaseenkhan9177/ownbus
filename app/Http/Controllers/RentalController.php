@@ -150,6 +150,14 @@ class RentalController extends Controller
             );
         }
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'rental' => $rental->load('customer', 'vehicle'),
+                'message' => 'Rental Quote created successfully.'
+            ]);
+        }
+
         return redirect()->route('company.rentals.show', $rental)
             ->with('success', 'Rental Quote created successfully.');
     }

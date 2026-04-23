@@ -44,6 +44,15 @@
         @endif
 
         @if(auth()->user()->role === 'company_admin' || auth()->user()->can('create-fine'))
+        <a href="{{ route('company.fines.checker') }}" class="group flex items-center justify-end space-x-3">
+            <span class="bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">Fine Checker</span>
+            <div class="w-12 h-12 bg-orange-500 text-white rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </a>
+
         <a href="{{ route('company.fines.create') }}" class="group flex items-center justify-end space-x-3">
             <span class="bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">Record Fine</span>
             <div class="w-12 h-12 bg-amber-500 text-white rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
