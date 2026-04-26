@@ -222,6 +222,10 @@ Route::prefix('company')->name('company.')->middleware(['auth', \App\Http\Middle
         Route::post('/rentals/contract', [\App\Http\Controllers\RentalController::class, 'storeContract'])->name('rentals.contract.store');
         Route::post('rentals/{rental}/transition', [\App\Http\Controllers\RentalController::class, 'transition'])->name('rentals.transition');
         Route::post('/api/rental/calculate-price', [\App\Http\Controllers\Api\RentalPriceController::class, 'calculate'])->name('api.rental.price');
+        Route::get('rentals/{rental}/pdf', [\App\Http\Controllers\RentalController::class, 'generatePdf'])->name('rentals.pdf');
+        Route::post('rentals/{rental}/confirm', [\App\Http\Controllers\RentalController::class, 'confirm'])->name('rentals.confirm');
+        Route::post('rentals/{rental}/assign-vehicle', [\App\Http\Controllers\RentalController::class, 'assignVehicle'])->name('rentals.assign-vehicle');
+        Route::post('rentals/{rental}/complete', [\App\Http\Controllers\RentalController::class, 'complete'])->name('rentals.complete');
         Route::resource('rentals', \App\Http\Controllers\RentalController::class);
     });
 

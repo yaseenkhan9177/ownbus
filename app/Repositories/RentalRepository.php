@@ -107,10 +107,6 @@ class RentalRepository
             $data['uuid'] = (string) Str::uuid();
         }
 
-        if (empty($data['rental_number'])) {
-            $data['rental_number'] = 'RENT-' . strtoupper(Str::random(8));
-        }
-
         return Rental::create($data);
     }
 

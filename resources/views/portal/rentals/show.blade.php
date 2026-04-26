@@ -1,322 +1,333 @@
 @extends('layouts.company')
+@section('title', 'Rental #'.$rental->rental_number.' — OwnBus')
 
-@section('title', 'Rental Intelligence - #' . $rental->rental_number)
-
-@section('header_title')
-<div class="flex items-center space-x-3">
-    <a href="{{ route('company.rentals.index') }}" class="p-2 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
-        </svg>
-    </a>
-    <div class="flex items-center space-x-2">
-        <div class="w-2 h-2 rounded-full bg-cyan-500"></div>
-        <h1 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight uppercase">Rental #{{ $rental->rental_number }}</h1>
-    </div>
-</div>
-@endsection
+@push('styles')
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body,.show-wrap{font-family:'DM Sans',sans-serif;background:#0A0F1E;}
+.show-wrap{min-height:100vh;padding:24px;}
+.card{background:#111827;border:1px solid #1F2937;border-radius:12px;padding:24px;margin-bottom:20px;}
+.card-title{font-size:13px;font-weight:700;color:#F9FAFB;margin-bottom:16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1F2937;padding-bottom:12px;}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(31,41,55,.5);font-size:13px;}
+.info-row:last-child{border-bottom:none;}
+.info-label{color:#6B7280;font-weight:500;}
+.info-val{color:#F9FAFB;font-weight:600;text-align:right;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,#00BCD4,#0097A7);color:#fff;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,188,212,.3);}
+.btn-success{background:rgba(16,185,129,.15);color:#10B981;border:1px solid rgba(16,185,129,.3);}
+.btn-success:hover{background:rgba(16,185,129,.25);}
+.btn-warning{background:rgba(245,158,11,.15);color:#F59E0B;border:1px solid rgba(245,158,11,.3);}
+.btn-warning:hover{background:rgba(245,158,11,.25);}
+.btn-danger{background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.3);}
+.btn-danger:hover{background:rgba(239,68,68,.25);}
+.btn-ghost{background:#1F2937;color:#9CA3AF;border:1px solid #374151;}
+.btn-ghost:hover{color:#F9FAFB;}
+.btn-pdf{background:rgba(139,92,246,.15);color:#8B5CF6;border:1px solid rgba(139,92,246,.3);}
+.btn-pdf:hover{background:rgba(139,92,246,.25);}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.badge-draft{background:rgba(107,114,128,.15);color:#9CA3AF;}
+.badge-confirmed{background:rgba(59,130,246,.15);color:#60A5FA;}
+.badge-active{background:rgba(16,185,129,.15);color:#10B981;}
+.badge-completed{background:rgba(139,92,246,.15);color:#8B5CF6;}
+.badge-cancelled{background:rgba(239,68,68,.15);color:#EF4444;}
+.pulse{animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.alert-warn{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;}
+.avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00BCD4,#0097A7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0;}
+.timeline-item{position:relative;padding-left:28px;padding-bottom:16px;}
+.timeline-item::before{content:'';position:absolute;left:7px;top:20px;bottom:0;width:2px;background:#1F2937;}
+.timeline-item:last-child::before{display:none;}
+.timeline-dot{position:absolute;left:0;top:4px;width:16px;height:16px;border-radius:50%;background:#00BCD4;border:2px solid #0A0F1E;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px;}
+.modal{background:#111827;border:1px solid #1F2937;border-radius:16px;padding:28px;width:100%;max-width:440px;box-shadow:0 25px 80px rgba(0,0,0,.6);}
+.form-label{font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px;}
+.form-input{width:100%;background:#0D1526;border:1px solid #1F2937;border-radius:8px;color:#F9FAFB;font-size:13px;padding:10px 14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:#00BCD4;}
+.flash-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#10B981;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:13px;font-weight:600;}
+.flash-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#EF4444;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:13px;font-weight:600;}
+</style>
+@endpush
 
 @section('content')
-<div class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+<div class="show-wrap" x-data="{
+    showAssignModal:false,
+    showCancelModal:false,
+    showPaymentModal:false,
+    cancelReason:''
+}">
 
-    @php
-    $lockService = app(\App\Services\DataLockService::class);
-    $isLocked = $lockService->isLocked($rental);
-    @endphp
+    @if(session('success'))<div class="flash-success">✅ {{ session('success') }}</div>@endif
+    @if(session('error'))<div class="flash-error">❌ {{ session('error') }}</div>@endif
 
-    @if($isLocked)
-    <div class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-2xl flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-amber-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
-                <i class="bi bi-lock-fill text-lg"></i>
-            </div>
+    {{-- Breadcrumb --}}
+    <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px;font-size:12px;color:#6B7280;">
+        <a href="{{ route('company.rentals.index') }}" style="color:#00BCD4;text-decoration:none;">🚌 Rentals</a>
+        <span>›</span>
+        <span style="color:#F9FAFB;">{{ $rental->rental_number }}</span>
+    </div>
+
+    {{-- Header --}}
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <h1 style="font-size:22px;font-weight:800;color:#F9FAFB;margin:0;">🚌 #{{ $rental->rental_number }}</h1>
+            @php
+                $badgeMap=['draft'=>'badge-draft','confirmed'=>'badge-confirmed','active'=>'badge-active','completed'=>'badge-completed','cancelled'=>'badge-cancelled'];
+                $bc=$badgeMap[$rental->status]??'badge-draft';
+            @endphp
+            <span class="badge {{ $bc }}">
+                @if($rental->status==='active')<span class="pulse" style="display:inline-block;width:7px;height:7px;background:#10B981;border-radius:50%;margin-right:4px;"></span>@endif
+                {{ strtoupper($rental->status) }}
+            </span>
+        </div>
+        {{-- Action Bar --}}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            @if(!in_array($rental->status,['completed','cancelled']))
+            <a href="{{ route('company.rentals.edit', $rental) }}" class="btn btn-ghost">✏️ Edit</a>
+            @endif
+            @if($rental->status==='draft' && $rental->vehicle_id)
+            <form action="{{ route('company.rentals.confirm', $rental) }}" method="POST" style="display:inline;">@csrf
+                <button type="submit" class="btn btn-success">✅ Confirm</button>
+            </form>
+            @endif
+            @if(!$rental->vehicle_id)
+            <button class="btn btn-warning" @click="showAssignModal=true">🚌 Assign Vehicle</button>
+            @endif
+            @if($rental->status==='confirmed')
+            <form action="{{ route('company.rentals.transition', $rental) }}" method="POST" style="display:inline;">@csrf
+                <input type="hidden" name="to_status" value="active">
+                <button type="submit" class="btn btn-success">🚀 Activate</button>
+            </form>
+            @endif
+            @if($rental->status==='active')
+            <form action="{{ route('company.rentals.complete', $rental) }}" method="POST" style="display:inline;">@csrf
+                <button type="submit" class="btn" style="background:rgba(139,92,246,.15);color:#8B5CF6;border:1px solid rgba(139,92,246,.3);">🏁 Complete</button>
+            </form>
+            @endif
+            @if(in_array($rental->status,['confirmed','active','completed']))
+            <a href="{{ route('company.rentals.pdf', $rental) }}" class="btn btn-pdf">📄 PDF</a>
+            @endif
+            @if($rental->payment_status!=='paid')
+            <button class="btn btn-primary" @click="showPaymentModal=true">💰 Payment</button>
+            @endif
+            @if(in_array($rental->status,['draft','confirmed','active']))
+            <button class="btn btn-danger" @click="showCancelModal=true">❌ Cancel</button>
+            @endif
+        </div>
+    </div>
+
+    {{-- No vehicle alert --}}
+    @if(!$rental->vehicle_id)
+    <div class="alert-warn">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:18px;">⚠️</span>
             <div>
-                <h3 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Enterprise Data Lock Active</h3>
-                <p class="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase">{{ $lockService->lockReason($rental) }}</p>
+                <div style="font-size:13px;font-weight:700;color:#F9FAFB;">No vehicle assigned to this rental</div>
+                <div style="font-size:11px;color:#F97316;">Assign a vehicle to proceed with confirmation.</div>
             </div>
         </div>
-        @can('override_data_lock')
-        <span class="text-[9px] font-black text-amber-600 bg-amber-100 dark:bg-amber-800/50 px-3 py-1 rounded-lg uppercase tracking-widest">
-            <i class="bi bi-shield-check mr-1"></i> Privilege: Can Override
-        </span>
-        @endcan
+        <button class="btn btn-warning" @click="showAssignModal=true">🚌 Assign Now</button>
     </div>
     @endif
 
-    {{-- 1. Tactical Summary Bar --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="p-4 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
-            @php
-            $statusColors = [
-            'draft' => 'text-slate-500',
-            'confirmed' => 'text-blue-500',
-            'active' => 'text-emerald-500',
-            'completed' => 'text-purple-500',
-            'cancelled' => 'text-rose-500',
-            ];
-            $color = $statusColors[$rental->status] ?? 'text-gray-500';
-            @endphp
-            <p class="text-lg font-black uppercase tracking-widest {{ $color }}">{{ $rental->status }}</p>
-        </div>
-        <div class="p-4 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Payment</p>
-            <p class="text-lg font-black uppercase tracking-widest {{ $rental->payment_status == 'paid' ? 'text-emerald-500' : 'text-amber-500' }}">
-                {{ $rental->payment_status }}
-            </p>
-        </div>
-        <div class="p-4 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Matrix Value</p>
-            <p class="text-lg font-black text-slate-900 dark:text-white uppercase">{{ number_format($rental->final_amount, 2) }} <span class="text-[8px] text-slate-400 tracking-tighter ml-1">AED</span></p>
-        </div>
-        <div class="p-4 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Target Client</p>
-            <p class="text-lg font-bold text-slate-900 dark:text-white truncate">{{ $rental->customer->name }}</p>
-        </div>
-    </div>
+    {{-- 3-Column Grid --}}
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:start;">
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {{-- Left: Mission Details & Assets --}}
-        <div class="lg:col-span-2 space-y-6">
-
-            {{-- Mission Timeline --}}
-            <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-1.5 h-4 bg-cyan-500 rounded-full"></div>
-                        <h2 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Mission Timeline</h2>
-                    </div>
-                </div>
-
-                <div class="relative flex items-center justify-between">
-                    <div class="absolute inset-x-0 top-1/2 h-0.5 bg-slate-100 dark:bg-slate-800 -translate-y-1/2"></div>
-
-                    <div class="relative z-10 text-center bg-white dark:bg-slate-900 px-4">
-                        <div class="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-cyan-500/20">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <p class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">Pickup Schedule</p>
-                        <p class="text-xs font-bold text-slate-400 mt-1">{{ $rental->start_date->format('d M Y, H:i') }}</p>
-                        <p class="text-[9px] text-cyan-500 font-bold mt-1 uppercase">{{ $rental->pickup_location }}</p>
-                    </div>
-
-                    <div class="relative z-10 text-center bg-white dark:bg-slate-900 px-4">
-                        <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <p class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">Duration</p>
-                        <p class="text-xs font-bold text-slate-400 mt-1">{{ $rental->start_date->diffForHumans($rental->end_date, true) }}</p>
-                    </div>
-
-                    <div class="relative z-10 text-center bg-white dark:bg-slate-900 px-4">
-                        <div class="w-10 h-10 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-slate-900/10">
-                            <svg class="w-5 h-5 text-white dark:text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-11V7" />
-                            </svg>
-                        </div>
-                        <p class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">Return Target</p>
-                        <p class="text-xs font-bold text-slate-400 mt-1">{{ $rental->end_date->format('d M Y, H:i') }}</p>
-                        <p class="text-[9px] text-slate-500 font-bold mt-1 uppercase">{{ $rental->dropoff_location ?: 'Same as Pickup' }}</p>
-                    </div>
-                </div>
+        {{-- Col 1: Rental Details + Schedule --}}
+        <div>
+            <div class="card">
+                <div class="card-title">📋 Rental Details</div>
+                <div class="info-row"><span class="info-label">Rental #</span><span class="info-val" style="color:#00BCD4;font-family:monospace;">{{ $rental->rental_number }}</span></div>
+                <div class="info-row"><span class="info-label">Type</span><span class="info-val">{{ ucfirst($rental->rental_type) }}</span></div>
+                <div class="info-row"><span class="info-label">Rate Scale</span><span class="info-val">{{ ucfirst(str_replace('_',' ',$rental->rate_type)) }}</span></div>
+                <div class="info-row"><span class="info-label">Created</span><span class="info-val">{{ $rental->created_at->format('d M Y H:i') }}</span></div>
+                <div class="info-row"><span class="info-label">Created By</span><span class="info-val">{{ $rental->creator->name ?? 'System' }}</span></div>
             </div>
-
-            {{-- Assets & Driver Intelligence --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Asset --}}
-                <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <div class="flex items-center space-x-2 mb-6">
-                        <div class="w-1.5 h-4 bg-purple-500 rounded-full"></div>
-                        <h2 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Deployed Asset</h2>
-                    </div>
-
-                    @if($rental->vehicle)
-                    <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
-                            @if($rental->vehicle->image_path)
-                            <img src="{{ asset('storage/' . $rental->vehicle->image_path) }}" class="w-full h-full object-cover">
-                            @else
-                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m4 0h1m-5 10h5m-5 4h5m2 0h2" />
-                            </svg>
-                            @endif
-                        </div>
-                        <div>
-                            <p class="text-xs font-black text-slate-900 dark:text-white uppercase">{{ $rental->vehicle->vehicle_number }}</p>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">{{ $rental->vehicle->make }} {{ $rental->vehicle->model }} ({{ $rental->vehicle->year }})</p>
-                            <a href="{{ route('company.fleet.show', $rental->vehicle) }}" class="text-[8px] font-black text-cyan-500 uppercase tracking-widest mt-1 inline-block">View Asset Log →</a>
-                        </div>
-                    </div>
-                    @else
-                    <div class="p-4 bg-rose-50 dark:bg-rose-500/10 rounded-xl border border-rose-100 dark:border-rose-500/20">
-                        <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-1">Alert: Assignment Missing</p>
-                        <p class="text-[10px] text-rose-400 font-medium">Please assign a vehicle to confirm this mission.</p>
-                    </div>
-                    @endif
-                </div>
-
-                {{-- Driver --}}
-                <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <div class="flex items-center space-x-2 mb-6">
-                        <div class="w-1.5 h-4 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Field Agent (Driver)</h2>
-                    </div>
-
-                    @if($rental->driver)
-                    <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center overflow-hidden uppercase font-black text-slate-300 text-xl">
-                            {{ substr($rental->driver->name, 0, 2) }}
-                        </div>
-                        <div>
-                            <p class="text-xs font-black text-slate-900 dark:text-white uppercase">{{ $rental->driver->name }}</p>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">{{ $rental->driver->email }}</p>
-                            <span class="text-[8px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded uppercase font-black tracking-tighter mt-1 inline-block">Active Duty</span>
-                        </div>
-                    </div>
-                    @else
-                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl text-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">No Agent Assigned / Self-Drive</p>
-                    </div>
-                    @endif
-                </div>
+            <div class="card">
+                <div class="card-title">📅 Schedule</div>
+                <div class="info-row"><span class="info-label">Pickup</span><span class="info-val">{{ $rental->start_date->format('d M Y H:i') }}</span></div>
+                <div class="info-row"><span class="info-label">Return</span><span class="info-val">{{ $rental->end_date->format('d M Y H:i') }}</span></div>
+                <div class="info-row"><span class="info-label">Duration</span><span class="info-val" style="color:#8B5CF6;">{{ $rental->start_date->diffInDays($rental->end_date) }} Days</span></div>
+                <div class="info-row"><span class="info-label">📍 Pickup</span><span class="info-val">{{ $rental->pickup_location ?: '—' }}</span></div>
+                <div class="info-row"><span class="info-label">🏁 Return</span><span class="info-val">{{ $rental->dropoff_location ?: 'Same as pickup' }}</span></div>
             </div>
+            @if($rental->notes)
+            <div class="card">
+                <div class="card-title">📝 Notes</div>
+                <p style="font-size:13px;color:#9CA3AF;line-height:1.6;">{{ $rental->notes }}</p>
+            </div>
+            @endif
+        </div>
 
-            {{-- Intelligent Notes --}}
-            <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-1.5 h-4 bg-slate-400 rounded-full"></div>
-                    <h2 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Mission Intelligence (Notes)</h2>
+        {{-- Col 2: Customer, Vehicle, Driver --}}
+        <div>
+            <div class="card">
+                <div class="card-title">👤 Customer</div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                    <div class="avatar">{{ strtoupper(substr($rental->customer->name??'U',0,1)) }}</div>
+                    <div>
+                        <div style="font-size:14px;font-weight:700;color:#F9FAFB;">{{ $rental->customer->name ?? '—' }}</div>
+                        <div style="font-size:12px;color:#6B7280;">{{ $rental->customer->company_name ?? '' }}</div>
+                    </div>
                 </div>
-                <p class="text-xs font-bold text-slate-500 leading-relaxed">{{ $rental->notes ?: 'No special operational intelligence provided for this mission.' }}</p>
+                <div class="info-row"><span class="info-label">📱 Phone</span><span class="info-val">{{ $rental->customer->phone ?? '—' }}</span></div>
+                <div class="info-row"><span class="info-label">📧 Email</span><span class="info-val">{{ $rental->customer->email ?? '—' }}</span></div>
+                @if($rental->customer->emirates_id)
+                <div class="info-row"><span class="info-label">🪪 Emirates ID</span><span class="info-val">{{ $rental->customer->emirates_id }}</span></div>
+                @endif
+            </div>
+            <div class="card">
+                <div class="card-title">🚌 Vehicle</div>
+                @if($rental->vehicle)
+                <div style="text-align:center;font-size:40px;margin-bottom:12px;">🚌</div>
+                <div class="info-row"><span class="info-label">Name</span><span class="info-val">{{ $rental->vehicle->vehicle_number }}</span></div>
+                <div class="info-row"><span class="info-label">Make/Model</span><span class="info-val">{{ $rental->vehicle->make }} {{ $rental->vehicle->model }}</span></div>
+                <div class="info-row"><span class="info-label">🪑 Seats</span><span class="info-val">{{ $rental->vehicle->seating_capacity ?? '—' }}</span></div>
+                <div style="margin-top:12px;"><a href="{{ route('company.fleet.show', $rental->vehicle) }}" class="btn btn-ghost" style="width:100%;justify-content:center;">View Vehicle</a></div>
+                @else
+                <div style="text-align:center;padding:20px;color:#6B7280;font-size:13px;">No vehicle assigned</div>
+                <button class="btn btn-warning" style="width:100%;justify-content:center;" @click="showAssignModal=true">🚌 Assign Vehicle</button>
+                @endif
+            </div>
+            <div class="card">
+                <div class="card-title">👨‍✈️ Driver</div>
+                @if($rental->driver)
+                <div style="text-align:center;font-size:40px;margin-bottom:12px;">👨‍✈️</div>
+                <div class="info-row"><span class="info-label">Name</span><span class="info-val">{{ $rental->driver->name }}</span></div>
+                <div class="info-row"><span class="info-label">📱 Phone</span><span class="info-val">{{ $rental->driver->phone ?? '—' }}</span></div>
+                @else
+                <div style="text-align:center;padding:20px;color:#6B7280;font-size:13px;">🚗 Self Drive — No driver assigned</div>
+                @endif
             </div>
         </div>
 
-        {{-- Right: Status Control & Financial Matrix --}}
-        <div class="space-y-6">
-
-            {{-- Status Control Center --}}
-            <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                <div class="flex items-center space-x-2 mb-6">
-                    <div class="w-1.5 h-4 bg-blue-500 rounded-full"></div>
-                    <h2 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">Lifecycle Matrix</h2>
+        {{-- Col 3: Financials + Payment History + Timeline --}}
+        <div>
+            <div class="card" style="background:linear-gradient(135deg,#0D1526,#111827);">
+                <div class="card-title" style="color:#F59E0B;">💰 Financial Summary</div>
+                <div class="info-row"><span class="info-label">Base Rate</span><span class="info-val">AED {{ number_format($rental->rate_amount, 2) }}/{{ str_replace('per_','',$rental->rate_type??'day') }}</span></div>
+                <div class="info-row"><span class="info-label">Duration</span><span class="info-val">{{ $rental->start_date->diffInDays($rental->end_date) }} days</span></div>
+                <div class="info-row"><span class="info-label">Discount</span><span style="color:#10B981;font-weight:700;font-size:13px;">- AED {{ number_format($rental->discount, 2) }}</span></div>
+                <div class="info-row"><span class="info-label">VAT (5%)</span><span class="info-val">AED {{ number_format($rental->tax, 2) }}</span></div>
+                <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px;margin:12px 0;">
+                    <div style="font-size:11px;color:#6B7280;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Grand Total</div>
+                    <div style="font-size:24px;font-weight:800;color:#F59E0B;">AED {{ number_format($rental->final_amount, 2) }}</div>
                 </div>
-
-                <div class="space-y-2">
-                    @if($rental->status == 'draft')
-                    <form action="{{ route('company.rentals.transition', $rental) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="to_status" value="confirmed">
-                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all">
-                            Confirm Mission
-                        </button>
-                    </form>
-                    @endif
-
-                    @if($rental->status == 'confirmed')
-                    <form action="{{ route('company.rentals.transition', $rental) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="to_status" value="active">
-                        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 transition-all">
-                            Deploy (Activate)
-                        </button>
-                    </form>
-                    @endif
-
-                    @if($rental->status == 'active')
-                    <form action="{{ route('company.rentals.transition', $rental) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="to_status" value="completed">
-                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-500/20 transition-all">
-                            Finalize (Complete)
-                        </button>
-                    </form>
-                    @endif
-
-                    @if(in_array($rental->status, ['draft', 'confirmed', 'active']))
-                    <form action="{{ route('company.rentals.transition', $rental) }}" method="POST" onsubmit="return confirm('Abort Mission?')">
-                        @csrf
-                        <input type="hidden" name="to_status" value="cancelled">
-                        <button type="submit" class="w-full py-3 bg-white dark:bg-slate-800 text-rose-500 border border-rose-100 dark:border-rose-900/30 hover:bg-rose-50 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all mt-2">
-                            Terminate (Cancel)
-                        </button>
-                    </form>
-                    @endif
-
-                    @if($rental->status == 'completed' || $rental->status == 'cancelled')
-                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Mission Concluded</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Financial Summary --}}
-            <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-                <div class="absolute -right-8 -top-8 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl"></div>
-
-                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-6">Financial Summary</h3>
-
-                <div class="space-y-3">
-                    <div class="flex justify-between text-xs font-bold">
-                        <span class="opacity-50 uppercase">Base Rate ({{ $rental->rate_type }})</span>
-                        <span>{{ number_format($rental->rate_amount, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs font-bold">
-                        <span class="opacity-50 uppercase">Incentives (Discount)</span>
-                        <span class="text-emerald-400">- {{ number_format($rental->discount, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs font-bold">
-                        <span class="opacity-50 uppercase">VAT (5%)</span>
-                        <span>{{ number_format($rental->tax, 2) }}</span>
-                    </div>
-                    <div class="border-t border-white/10 my-4"></div>
-                    <div class="flex justify-between items-center pt-2">
-                        <span class="text-xs font-black uppercase tracking-widest opacity-60">Total Value</span>
-                        <span class="text-2xl font-black text-cyan-400 tracking-tighter uppercase">
-                            {{ number_format($rental->final_amount, 2) }} <span class="text-[10px] ml-0.5 opacity-50">AED</span>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="mt-8 space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/5">
-                        <span class="text-[10px] font-black uppercase tracking-widest opacity-50">Security Bond</span>
-                        <span class="text-xs font-black uppercase">{{ number_format($rental->security_deposit, 2) }} AED</span>
-                    </div>
-                </div>
-
-                @if($rental->payment_status !== 'paid')
-                <a href="#" class="w-full mt-6 py-4 bg-white text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center hover:scale-[1.02] transition-transform">
-                    <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                    </svg>
-                    Collect Funds
-                </a>
+                <div class="info-row"><span class="info-label">Deposit</span><span class="info-val">AED {{ number_format($rental->security_deposit, 2) }}</span></div>
+                @php
+                    $paid = $rental->payments->sum('amount') ?? 0;
+                    $outstanding = max(0, $rental->final_amount - $paid);
+                @endphp
+                <div class="info-row"><span class="info-label">Paid</span><span style="color:#10B981;font-weight:700;font-size:13px;">AED {{ number_format($paid, 2) }}</span></div>
+                <div class="info-row"><span class="info-label">Outstanding</span><span style="color:{{ $outstanding>0?'#EF4444':'#10B981' }};font-weight:700;font-size:13px;">AED {{ number_format($outstanding, 2) }}</span></div>
+                @if($outstanding>0)
+                <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:12px;" @click="showPaymentModal=true">💰 Record Payment</button>
                 @endif
             </div>
 
-            {{-- Status Log (Timeline) --}}
-            <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                <h3 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-6">Status Matrix History</h3>
-                <div class="space-y-6 relative before:absolute before:inset-y-0 before:left-3 before:w-0.5 before:bg-slate-100 dark:before:bg-slate-800">
-                    @foreach($rental->statusLogs as $log)
-                    <div class="relative pl-8">
-                        <div class="absolute left-1.5 top-1 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 -translate-x-1/2"></div>
-                        <p class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest leading-none">{{ $log->to_status }}</p>
-                        <p class="text-[9px] text-slate-400 font-bold mt-1 uppercase">{{ $log->created_at->format('d M, H:i') }} • {{ $log->user?->name ?: 'System' }}</p>
-                        @if($log->reason)
-                        <p class="text-[9px] text-slate-500 mt-1 italic">"{{ $log->reason }}"</p>
-                        @endif
-                    </div>
+            {{-- Payment History --}}
+            @if($rental->payments && $rental->payments->count())
+            <div class="card">
+                <div class="card-title">💳 Payment History</div>
+                <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                    <thead><tr style="border-bottom:1px solid #1F2937;">
+                        <th style="text-align:left;padding:6px 0;color:#6B7280;font-weight:700;text-transform:uppercase;font-size:10px;">Date</th>
+                        <th style="text-align:right;padding:6px 0;color:#6B7280;font-weight:700;text-transform:uppercase;font-size:10px;">Amount</th>
+                        <th style="text-align:right;padding:6px 0;color:#6B7280;font-weight:700;text-transform:uppercase;font-size:10px;">Method</th>
+                    </tr></thead>
+                    <tbody>
+                    @foreach($rental->payments as $pmt)
+                    <tr style="border-bottom:1px solid rgba(31,41,55,.5);">
+                        <td style="padding:8px 0;color:#9CA3AF;">{{ \Carbon\Carbon::parse($pmt->paid_at)->format('d M Y') }}</td>
+                        <td style="padding:8px 0;text-align:right;color:#10B981;font-weight:700;">AED {{ number_format($pmt->amount, 2) }}</td>
+                        <td style="padding:8px 0;text-align:right;color:#9CA3AF;">{{ ucfirst($pmt->payment_method ?? 'cash') }}</td>
+                    </tr>
                     @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+
+            {{-- Activity Timeline --}}
+            <div class="card">
+                <div class="card-title">📊 Activity Timeline</div>
+                <div>
+                    @forelse($rental->statusLogs as $log)
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div style="font-size:12px;font-weight:700;color:#F9FAFB;text-transform:uppercase;">{{ $log->to_status }}</div>
+                        <div style="font-size:11px;color:#6B7280;margin-top:2px;">{{ $log->created_at->format('d M Y H:i') }} • {{ $log->user->name ?? 'System' }}</div>
+                        @if($log->reason)<div style="font-size:11px;color:#9CA3AF;margin-top:2px;font-style:italic;">"{{ $log->reason }}"</div>@endif
+                    </div>
+                    @empty
+                    <p style="color:#6B7280;font-size:12px;text-align:center;">No activity yet</p>
+                    @endforelse
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- ASSIGN VEHICLE MODAL --}}
+    <div class="modal-overlay" x-show="showAssignModal" x-cloak @click.self="showAssignModal=false">
+        <div class="modal">
+            <h3 style="font-size:16px;font-weight:800;color:#F9FAFB;margin-bottom:16px;">🚌 Assign Vehicle</h3>
+            <form action="{{ route('company.rentals.assign-vehicle', $rental) }}" method="POST">
+                @csrf
+                <label class="form-label">Available Vehicles</label>
+                <select name="vehicle_id" required class="form-input" style="margin-bottom:20px;">
+                    <option value="">Select a vehicle...</option>
+                    @foreach(\App\Models\Vehicle::where('status','available')->get() as $v)
+                    <option value="{{ $v->id }}">{{ $v->vehicle_number }} — {{ $v->make }} {{ $v->model }} ({{ $v->seating_capacity }} seats)</option>
+                    @endforeach
+                </select>
+                <div style="display:flex;gap:10px;">
+                    <button type="button" class="btn btn-ghost" style="flex:1;justify-content:center;" @click="showAssignModal=false">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;">🚌 Assign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- CANCEL MODAL --}}
+    <div class="modal-overlay" x-show="showCancelModal" x-cloak @click.self="showCancelModal=false">
+        <div class="modal">
+            <h3 style="font-size:16px;font-weight:800;color:#EF4444;margin-bottom:8px;">❌ Cancel Rental</h3>
+            <p style="font-size:13px;color:#6B7280;margin-bottom:16px;">⚠️ This action cannot be undone.</p>
+            <form action="{{ route('company.rentals.transition', $rental) }}" method="POST">
+                @csrf
+                <input type="hidden" name="to_status" value="cancelled">
+                <label class="form-label">Reason for cancellation *</label>
+                <textarea name="reason" class="form-input" rows="3" required placeholder="Provide a reason..." style="margin-bottom:16px;"></textarea>
+                <div style="display:flex;gap:10px;">
+                    <button type="button" class="btn btn-ghost" style="flex:1;justify-content:center;" @click="showCancelModal=false">Keep Rental</button>
+                    <button type="submit" class="btn btn-danger" style="flex:1;justify-content:center;">❌ Cancel Rental</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- PAYMENT MODAL --}}
+    <div class="modal-overlay" x-show="showPaymentModal" x-cloak @click.self="showPaymentModal=false">
+        <div class="modal">
+            <h3 style="font-size:16px;font-weight:800;color:#F9FAFB;margin-bottom:8px;">💰 Record Payment</h3>
+            <p style="font-size:13px;color:#EF4444;margin-bottom:16px;">Outstanding: AED {{ number_format($outstanding ?? 0, 2) }}</p>
+            <form action="{{ route('company.finance.dashboard') }}" method="GET">
+                <div style="display:grid;gap:14px;margin-bottom:20px;">
+                    <div><label class="form-label">Amount (AED)</label><input type="number" name="amount" class="form-input" placeholder="{{ number_format($outstanding ?? 0, 2) }}" step="0.01" min="0"></div>
+                    <div><label class="form-label">Method</label>
+                        <select name="method" class="form-input">
+                            <option>Cash</option><option>Bank Transfer</option><option>Card</option><option>Cheque</option>
+                        </select>
+                    </div>
+                    <div><label class="form-label">Reference #</label><input type="text" name="ref" class="form-input" placeholder="Optional"></div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button type="button" class="btn btn-ghost" style="flex:1;justify-content:center;" @click="showPaymentModal=false">Cancel</button>
+                    <a href="{{ route('company.finance.dashboard') }}" class="btn btn-primary" style="flex:1;justify-content:center;">Go to Finance</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 @endsection

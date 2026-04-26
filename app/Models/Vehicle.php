@@ -154,6 +154,13 @@ class Vehicle extends Model
         return $this->hasMany(Rental::class, 'vehicle_id');
     }
 
+    public function currentRental()
+    {
+        return $this->hasOne(Rental::class, 'vehicle_id')
+            ->whereIn('status', ['active', 'confirmed'])
+            ->latestOfMany();
+    }
+
     public function contracts()
     {
         return $this->hasMany(Contract::class);

@@ -16,6 +16,14 @@ class Rental extends Model
     {
         static::observe(\App\Observers\RentalObserver::class);
         static::observe(\App\Observers\RentalCacheObserver::class);
+
+        static::creating(function ($rental) {
+            if (empty($rental->rental_number)) {
+                $year  = date('Y');
+                $count = static::whereYear('created_at', $year)->count() + 1;
+                $rental->rental_number = 'RNT-' . $year . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+            }
+        });
     }
 
     // Status Constants
@@ -59,6 +67,7 @@ class Rental extends Model
         'created_by',
         'coupon_id',
         'pricing_adjustments',
+        'pdf_path',
     ];
 
     protected $casts = [

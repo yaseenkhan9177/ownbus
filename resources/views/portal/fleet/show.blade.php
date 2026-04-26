@@ -157,6 +157,42 @@
                         </div>
 
                         <div class="space-y-6">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-l-2 border-cyan-500 pl-2">Current Deployment</h3>
+                            <div class="p-4 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm">
+                                @if($vehicle->currentRental)
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assigned To</p>
+                                        <p class="text-sm font-black text-slate-900 dark:text-white uppercase">{{ $vehicle->currentRental->customer->name }}</p>
+                                        <a href="{{ route('company.rentals.show', $vehicle->currentRental) }}" class="text-[9px] font-bold text-cyan-500 uppercase tracking-widest hover:underline">Mission #{{ $vehicle->currentRental->rental_number }}</a>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800 grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">From</p>
+                                        <p class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ $vehicle->currentRental->start_date->format('d M Y') }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Return By</p>
+                                        <p class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ $vehicle->currentRental->end_date->format('d M Y') }}</p>
+                                    </div>
+                                </div>
+                                @else
+                                <div class="flex flex-col items-center justify-center py-4 text-center">
+                                    <div class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <p class="text-xs font-black text-emerald-500 uppercase tracking-widest">Available for Duty</p>
+                                    <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">No active missions recorded</p>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
                             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-l-2 border-amber-500 pl-2">Plate & Fine Info</h3>
                             @if($vehicle->plate_number_dp)
                             @php

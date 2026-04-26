@@ -37,7 +37,7 @@ class VehicleRepository
         // Eager Loading & Aggregates
         // Loading 'branch' if it exists (assuming Branch model exists)
         // Calculating total revenue via rentals relation
-        $query->with(['branch'])
+        $query->with(['branch', 'currentRental.customer'])
             ->withSum('rentals as total_revenue', 'final_amount');
 
         return $query->orderBy('created_at', 'desc')->paginate($perPage);

@@ -109,6 +109,7 @@
                         <th class="py-4 px-4">Class</th>
                         <th class="py-4 px-4">Plate Info</th>
                         <th class="py-4 px-4">Deployment Status</th>
+                        <th class="py-4 px-4">Assigned To</th>
                         <th class="py-4 px-4">Logistics (ODO)</th>
                         <th class="py-4 px-4">Yield (Gross)</th>
                         <th class="py-4 px-6 text-right">Command</th>
@@ -193,6 +194,16 @@
                                 <div class="w-1.5 h-1.5 rounded-full {{ $cfg['dot'] }} {{ $vehicle->status === 'available' ? 'animate-pulse' : '' }}"></div>
                                 <span class="text-[10px] font-black uppercase tracking-widest">{{ $cfg['label'] }}</span>
                             </div>
+                        </td>
+                        <td class="py-4 px-4">
+                            @if($vehicle->currentRental && $vehicle->currentRental->customer)
+                            <div class="flex flex-col">
+                                <span class="text-xs font-black text-slate-900 dark:text-white uppercase truncate max-w-[120px]">{{ $vehicle->currentRental->customer->name }}</span>
+                                <a href="{{ route('company.rentals.show', $vehicle->currentRental) }}" class="text-[9px] text-cyan-500 font-bold uppercase tracking-widest hover:underline">{{ $vehicle->currentRental->rental_number }}</a>
+                            </div>
+                            @else
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">--</span>
+                            @endif
                         </td>
                         <td class="py-4 px-4">
                             <div class="flex flex-col">

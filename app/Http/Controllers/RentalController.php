@@ -19,7 +19,11 @@ use App\Services\Fleet\ContractDeploymentService;
 use App\Exceptions\CreditLimitExceededException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\WhatsAppService;
+use Carbon\Carbon;
 
 class RentalController extends Controller
 {
@@ -104,7 +108,6 @@ class RentalController extends Controller
             'customer_id'      => $validated['customer_id'],
             'vehicle_id'       => $validated['vehicle_id'] ?? null,
             'driver_id'        => $validated['driver_id'] ?? null,
-            'rental_number'    => 'RENT-' . strtoupper(Str::random(8)),
             'rental_type'      => $validated['rental_type'],
             'rate_type'        => $validated['rate_type'],
             'rate_amount'      => $validated['rate_amount'],
@@ -318,5 +321,158 @@ class RentalController extends Controller
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Failed to deploy contract: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Confirm the rental mission.
+     */
+    public function confirm($id)
+    {
+        $company = $this->getCompanyOrAbort();
+        $rental = Rental::with(['customer', 'vehicle', 'driver'])->findOrFail($id);
+
+        if ($rental->status !== Rental::STATUS_DRAFT) {
+            return back()->with('error', 'Only draft rentals can be confirmed.');
+        }
+
+        if (!$rental->vehicle_id) {
+            return back()->with('error', 'Please assign a vehicle before confirming.');
+        }
+
+        try {
+            $this->stateService->transition($rental, Rental::STATUS_CONFIRMED);
+
+            $this->logEvent(
+                $company,
+                EventLoggerService::RENTAL_UPDATED,
+                $rental,
+                "Rental #{$rental->rental_number} confirmed and finalized",
+                ['status' => Rental::STATUS_CONFIRMED]
+            );
+
+            // Auto-generate PDF and Send Notifications
+            $this->generateAndSendPdf($rental);
+
+            return back()->with('success', 'Rental confirmed, PDF generated, and customer notified via WhatsApp.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Complete the rental mission.
+     */
+    public function complete($id)
+    {
+        $company = $this->getCompanyOrAbort();
+        $rental = Rental::findOrFail($id);
+
+        try {
+            $this->stateService->transition($rental, Rental::STATUS_COMPLETED);
+
+            $this->logEvent(
+                $company,
+                EventLoggerService::RENTAL_COMPLETED,
+                $rental,
+                "Rental #{$rental->rental_number} marked as completed",
+                ['status' => Rental::STATUS_COMPLETED]
+            );
+
+            return back()->with('success', 'Rental mission completed.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Assign vehicle to an existing rental.
+     */
+    public function assignVehicle(Request $request, $id)
+    {
+        $company = $this->getCompanyOrAbort();
+        $rental = Rental::findOrFail($id);
+
+        $request->validate([
+            'vehicle_id' => 'required|exists:tenant.vehicles,id'
+        ]);
+
+        $vehicle = Vehicle::findOrFail($request->vehicle_id);
+
+        // Check availability
+        $opsService = app(\App\Services\Fleet\FleetOperationsService::class);
+        if (!$opsService->checkVehicleAvailability($vehicle, $rental->start_date, $rental->end_date, $rental->id)) {
+            return back()->with('error', 'This vehicle is already booked for the selected dates.');
+        }
+
+        $rental->update(['vehicle_id' => $vehicle->id]);
+
+        $this->logEvent(
+            $company,
+            EventLoggerService::RENTAL_UPDATED,
+            $rental,
+            "Vehicle {$vehicle->vehicle_number} assigned to Rental #{$rental->rental_number}",
+            ['vehicle_id' => $vehicle->id]
+        );
+
+        return back()->with('success', 'Vehicle assigned successfully.');
+    }
+
+    /**
+     * Generate and download PDF.
+     */
+    public function generatePdf($id)
+    {
+        $rental = Rental::with(['customer', 'vehicle', 'driver', 'company'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('portal.rentals.pdf', compact('rental'));
+        $pdf->setPaper('A4', 'portrait');
+
+        // Save to storage
+        $path = "rentals/{$rental->rental_number}.pdf";
+        Storage::put("public/{$path}", $pdf->output());
+
+        // Update rental with pdf path
+        $rental->update(['pdf_path' => $path]);
+
+        return $pdf->download("Rental-{$rental->rental_number}.pdf");
+    }
+
+    /**
+     * Generate PDF and send via WhatsApp/Email.
+     */
+    private function generateAndSendPdf($rental)
+    {
+        // Ensure relationships are loaded
+        $rental->load(['customer', 'vehicle', 'driver', 'company']);
+
+        // Generate PDF
+        $pdf = Pdf::loadView('portal.rentals.pdf', compact('rental'));
+        $pdf->setPaper('A4', 'portrait');
+
+        $path = "rentals/{$rental->rental_number}.pdf";
+        Storage::put("public/{$path}", $pdf->output());
+
+        // Update rental record
+        $rental->update(['pdf_path' => $path]);
+
+        // Send WhatsApp
+        if ($rental->customer && $rental->customer->phone) {
+            $whatsapp = new WhatsAppService();
+            $message = "✅ *RENTAL CONFIRMED*\n\n" .
+                "Dear {$rental->customer->name},\n\n" .
+                "Your rental has been confirmed!\n\n" .
+                "🚌 Vehicle: " . ($rental->vehicle ? $rental->vehicle->vehicle_number : 'N/A') . "\n" .
+                "📅 From: " . $rental->start_date->format('d M Y') . "\n" .
+                "📅 To: " . $rental->end_date->format('d M Y') . "\n" .
+                "💰 Total: AED " . number_format($rental->final_amount, 2) . "\n\n" .
+                "Login to download receipt:\n" .
+                "ownbus.software\n\n" .
+                "_OwnBus Fleet Management_";
+
+            $whatsapp->send($rental->customer->phone, $message);
+        }
+
+        // Send Email (placeholder - implement if needed)
+        // Mail::to($rental->customer->email)->send(new RentalConfirmedMail($rental, $path));
     }
 }
