@@ -404,3 +404,22 @@ Route::prefix('driver')->name('driver.')->group(function () {
         Route::get('/profile', [App\Http\Controllers\Driver\DriverReportController::class, 'profile'])->name('profile');
     });
 });
+
+// ============================================================
+// PWA & OFFLINE ROUTES
+// ============================================================
+Route::get('/offline', function() {
+    return view('offline');
+})->name('offline');
+
+Route::get('/sw.js', function() {
+    return response()
+        ->file(public_path('sw.js'))
+        ->header('Content-Type', 'application/javascript');
+});
+
+Route::get('/manifest.json', function() {
+    return response()
+        ->file(public_path('manifest.json'))
+        ->header('Content-Type', 'application/manifest+json');
+});

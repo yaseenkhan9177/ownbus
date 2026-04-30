@@ -335,4 +335,30 @@ body,.create-wrap{font-family:'DM Sans',sans-serif;background:#0A0F1E;}
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+// Intercept form submission
+document.getElementById('rentalForm')
+    ?.addEventListener('submit', async (e) => {
+    
+    if (!navigator.onLine) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        
+        // Add extras to data if needed, or form fields are already tracked
+        await window.OwnBusOffline.handleOfflineForm(
+            e.target,
+            '{{ route('company.rentals.store') }}',
+            data
+        );
+        
+        // Need to explicitly show if we don't rely fully on handleOfflineForm returning true
+        alert('✅ Rental saved offline!\nWill sync when internet returns.');
+    }
+});
+</script>
+@endpush
 @endsection

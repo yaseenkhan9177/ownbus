@@ -12,6 +12,91 @@
     <!-- Alpine.js for interactivity -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00BCD4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="OwnBus">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+
+    <style>
+    .status-online {
+        color: #10B981;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .status-offline {
+        color: #EF4444;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        background: #10B981;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    .offline-dot {
+        width: 8px;
+        height: 8px;
+        background: #EF4444;
+        border-radius: 50%;
+    }
+    .sync-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+    }
+    .sync-notification.success {
+        background: #064E3B;
+        border: 1px solid #10B981;
+        color: #10B981;
+    }
+    .sync-notification.warning {
+        background: #78350F;
+        border: 1px solid #F59E0B;
+        color: #F59E0B;
+    }
+    .sync-notification.info {
+        background: #1E3A5F;
+        border: 1px solid #00BCD4;
+        color: #00BCD4;
+    }
+    .install-app-btn {
+        background: #00BCD4;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.3s;
+    }
+    .install-app-btn:hover {
+        background: #0097A7;
+    }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    </style>
+
     @stack('styles')
 </head>
 
@@ -50,6 +135,14 @@
 
                 <!-- Auth Links -->
                 <div class="flex items-center space-x-4">
+                    <!-- PWA Indicators -->
+                    <div id="connection-status" class="status-online">
+                        <span class="online-dot"></span> Online
+                    </div>
+                    <button id="install-btn" class="hidden install-app-btn">
+                        📱 Install App
+                    </button>
+
                     @auth
                     @if(auth()->user()->role === 'customer')
                     <!-- Notification Bell -->
@@ -167,6 +260,7 @@
 
     @stack('scripts')
 
+    <script src="/js/offline.js"></script>
     <script>
         function markAsRead(notificationId) {
             fetch(`/portal/notifications/${notificationId}/read`, {
@@ -177,6 +271,33 @@
                 }
             });
         }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            document.getElementById('install-btn')
+                ?.classList.remove('hidden');
+        });
+
+        document.getElementById('install-btn')
+            ?.addEventListener('click', async () => {
+            
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt
+                    .userChoice;
+                
+                if (result.outcome === 'accepted') {
+                    console.log('App installed!');
+                }
+                deferredPrompt = null;
+            }
+        });
     </script>
 </body>
 
